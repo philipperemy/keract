@@ -19,9 +19,6 @@ if __name__ == '__main__':
 
     x_train, y_train, x_test, y_test = get_mnist_data()
 
-    batch_size = 128
-    epochs = 12
-
     model = Sequential()
     model.add(Conv2D(32, kernel_size=(3, 3),
                      activation='relu',
@@ -54,8 +51,8 @@ if __name__ == '__main__':
                                  save_best_only=True)
 
     model.fit(x_train, y_train,
-              batch_size=batch_size,
-              epochs=epochs,
+              batch_size=128,
+              epochs=12,
               verbose=1,
               validation_data=(x_test, y_test),
               callbacks=[checkpoint])
