@@ -8,11 +8,11 @@ from natsort import natsorted
 from data import get_mnist_data
 
 
-def get_visualizations(m, inputs, print_shape_only=False):
+def get_visualizations(model, inputs, print_shape_only=False):
     print('----- activations -----')
     activations = []
-    inp = m.input
-    outputs = [layer.output for layer in m.layers]  # all layer outputs
+    inp = model.input
+    outputs = [layer.output for layer in model.layers]  # all layer outputs
     funcs = [K.function([inp] + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
     if len(inputs.shape) == 3:
         batch_inputs = inputs[np.newaxis, ...]
