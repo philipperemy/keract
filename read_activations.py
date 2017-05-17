@@ -43,7 +43,6 @@ if __name__ == '__main__':
 
     x_train, y_train, x_test, y_test = get_mnist_data()
 
-    batch_size = 128
     # checking that the accuracy is the same as before 99% at the first epoch.
     test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1, batch_size=128)
     print('')
