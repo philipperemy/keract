@@ -1,13 +1,13 @@
-# Keras Visualize Activations
+# Visualize the Activations of your layers with Keras
 *Simple example to show how to get the activations for each layer in your Keras model*
 
-This example considers the MNIST model. I separated the training and the visualizations. If the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
+This example considers the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
 ## 1. Train your favorite model (I chose MNIST)
 ```
 python model_run.py
 ```
-- definition of the model
+- define the model
 - train the model
 - save the best model in checkpoints/
 
@@ -16,8 +16,9 @@ python model_run.py
 python read_activations.py
 ```
 - load the model from the best checkpoint
-- read the activations:
+- read the activations
 
+### Examples
 Shapes of the activations (one sample):
 ```
 ----- activations -----
@@ -44,8 +45,9 @@ Shapes of the activations (200 samples):
 (200, 10)
 ```
 
-## 3. Visualization function
+### Function of interest
 `get_visualizations(model, inputs, print_shape_only=False) : activations`
+
 Inputs:
 - `model`: Keras model
 - `inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
