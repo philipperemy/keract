@@ -5,7 +5,7 @@ This example considers the MNIST model. I separated the training and the visuali
 
 ## 1. Train your favorite model (I chose MNIST)
 ```
-python model_run.py
+python model_train.py
 ```
 - define the model
 - train the model
