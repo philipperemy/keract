@@ -1,7 +1,36 @@
 # Visualize the Activations of your layers with Keras
 *Simple example to show how to get the activations for each layer in your Keras model*
 
-This example considers the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
+This is the function to visualize the activations:
+```
+def get_visualizations(model, inputs, print_shape_only=False):
+    print('----- activations -----')
+    activations = []
+    inp = model.input
+    outputs = [layer.output for layer in model.layers]  # all layer outputs
+    funcs = [K.function([inp] + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
+    if len(inputs.shape) == 3:
+        batch_inputs = inputs[np.newaxis, ...]
+    else:
+        batch_inputs = inputs
+    layer_outputs = [func([batch_inputs, 1.])[0] for func in funcs]
+    for layer_activations in layer_outputs:
+        activations.append(layer_activations)
+        if print_shape_only:
+            print(layer_activations.shape)
+        else:
+            print(layer_activations)
+    return activations
+```
+
+
+Inputs:
+- `model`: Keras model
+- `inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
+- `print_shape_only`: If set to True, will print the entire activations arrays (might be very verbose!)
+
+
+I also provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
 ## 1. Train your favorite model (I chose MNIST)
 ```
@@ -44,12 +73,3 @@ Shapes of the activations (200 samples):
 (200, 128)
 (200, 10)
 ```
-
-### Function of interest
-`get_visualizations(model, inputs, print_shape_only=False) : activations`
-
-Inputs:
-- `model`: Keras model
-- `inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
-- `print_shape_only`: If set to True, will print the entire activations arrays (might be very verbose!)
-
