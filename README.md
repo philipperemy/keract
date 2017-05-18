@@ -3,6 +3,10 @@
 
 This is the function to visualize the activations:
 ```
+import keras.backend as K
+import numpy as np
+
+
 def get_visualizations(model, inputs, print_shape_only=False):
     print('----- activations -----')
     activations = []
