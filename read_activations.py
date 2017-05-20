@@ -8,7 +8,7 @@ from natsort import natsorted
 from data import get_mnist_data
 
 
-def get_visualizations(model, inputs, print_shape_only=False):
+def get_activations(model, inputs, print_shape_only=False):
     print('----- activations -----')
     activations = []
     inp = model.input
@@ -48,6 +48,6 @@ if __name__ == '__main__':
     print('')
     assert test_acc > 0.98
 
-    get_visualizations(model, x_test[0], print_shape_only=True)  # with just one sample.
+    get_activations(model, x_test[0], print_shape_only=True)  # with just one sample.
 
-    get_visualizations(model, x_test[0:200], print_shape_only=True)  # with 200 samples.
+    get_activations(model, x_test[0:200], print_shape_only=True)  # with 200 samples.

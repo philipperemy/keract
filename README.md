@@ -7,7 +7,7 @@ import keras.backend as K
 import numpy as np
 
 
-def get_visualizations(model, inputs, print_shape_only=False):
+def get_activations(model, inputs, print_shape_only=False):
     print('----- activations -----')
     activations = []
     inp = model.input
