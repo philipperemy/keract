@@ -16,22 +16,19 @@ Outputs:
 
 I also provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
-### 1. Train your favorite model (I chose MNIST)
+## Steps
+
 ```
 python model_train.py
 ```
 - define the model
-- train the model
-- save the best model in checkpoints/
-
-### 2. Visualize the activations of each layer
-```
-python read_activations.py
-```
+- if no checkpoints are detected:
+  - train the model
+  - save the best model in checkpoints/
 - load the model from the best checkpoint
 - read the activations
 
-### 3. Activations
+## Activations
 Shapes of the activations (one sample):
 ```
 ----- activations -----
