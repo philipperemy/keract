@@ -1,31 +1,7 @@
 # Visualize the Activations of your layers with Keras
-*Simple example to show how to get the activations for each layer in your Keras model*
+*Code and useful examples to show how to get the activations for each layer for Keras.*
 
-This is the function to visualize the activations:
-```
-import keras.backend as K
-import numpy as np
-
-
-def get_activations(model, inputs, print_shape_only=False):
-    print('----- activations -----')
-    activations = []
-    inp = model.input
-    outputs = [layer.output for layer in model.layers]  # all layer outputs
-    funcs = [K.function([inp] + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
-    if len(inputs.shape) == 3:
-        batch_inputs = inputs[np.newaxis, ...]
-    else:
-        batch_inputs = inputs
-    layer_outputs = [func([batch_inputs, 1.])[0] for func in funcs]
-    for layer_activations in layer_outputs:
-        activations.append(layer_activations)
-        if print_shape_only:
-            print(layer_activations.shape)
-        else:
-            print(layer_activations)
-    return activations
-```
+The function to visualize the activations are in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
 
 
 Inputs:
@@ -33,10 +9,14 @@ Inputs:
 - `inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
 - `print_shape_only`: If set to True, will print the entire activations arrays (might be very verbose!)
 
+Outputs:
+- returns a list of each layer (by order of definition) and the corresponding activations.
+
+# Example 1: MNIST
 
 I also provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
-## 1. Train your favorite model (I chose MNIST)
+### 1. Train your favorite model (I chose MNIST)
 ```
 python model_train.py
 ```
@@ -44,14 +24,14 @@ python model_train.py
 - train the model
 - save the best model in checkpoints/
 
-## 2. Visualize the activations of each layer
+### 2. Visualize the activations of each layer
 ```
 python read_activations.py
 ```
 - load the model from the best checkpoint
 - read the activations
 
-### Examples
+### 3. Activations
 Shapes of the activations (one sample):
 ```
 ----- activations -----
@@ -77,3 +57,7 @@ Shapes of the activations (200 samples):
 (200, 128)
 (200, 10)
 ```
+
+# Example 2: Model with multi inputs
+
+`model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
