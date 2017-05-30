@@ -6,8 +6,9 @@ The function to visualize the activations are in the script [read_activations.py
 
 Inputs:
 - `model`: Keras model
-- `inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
+- `model_inputs`: Inputs to the model for which we want to get the activations (for example 200 MNIST digits)
 - `print_shape_only`: If set to True, will print the entire activations arrays (might be very verbose!)
+- `layer_name`: Used to retrive the activation of a specific layer, if the name matches one of the existing layers.
 
 Outputs:
 - returns a list of each layer (by order of definition) and the corresponding activations.
