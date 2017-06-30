@@ -1,30 +1,24 @@
-# Extract the Activation Maps of your Keras models
+# Extract the activation maps of your Keras models
 [![license](https://img.shields.io/badge/License-Apache_2.0-brightgreen.svg)](https://github.com/philipperemy/keras-attention-mechanism/blob/master/LICENSE) [![dep1](https://img.shields.io/badge/Tensorflow-1.2+-blue.svg)](https://www.tensorflow.org/) [![dep2](https://img.shields.io/badge/Keras-2.0+-blue.svg)](https://keras.io/) 
 
-*Code and useful examples to show how to get the activations for each layer for Keras.*
-
-## Example
+*Short code and useful examples to show how to get the activations for each layer for Keras.*
 
 <p align="center">
   <img src="assets/0.png" width="50">
   <br><i>A random seven from MNIST</i>
 </p>
 
-<hr/>
 
 <p align="center">
   <img src="assets/1.png">
   <br><i>Activation map of CONV1 of LeNet</i>
 </p>
 
-<hr/>
-
 <p align="center">
   <img src="assets/2.png" width="200">
   <br><i>Activation map of FC1 of LeNet</i>
 </p>
 
-<hr/>
 
 <p align="center">
   <img src="assets/3.png">
@@ -32,7 +26,6 @@
 </p>
 
 <hr/>
-
 
 The function to visualize the activations is in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
 
@@ -45,11 +38,7 @@ Inputs:
 Outputs:
 - returns a list of each layer (by order of definition) and the corresponding activations.
 
-## Example 1: MNIST
-
 I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
-
-## Steps
 
 Running `python model_train.py` will do:
 
@@ -60,7 +49,6 @@ Running `python model_train.py` will do:
 - load the model from the best checkpoint
 - read the activations
 
-## Activations
 Shapes of the activations (one sample):
 ```
 ----- activations -----
@@ -86,7 +74,5 @@ Shapes of the activations (200 samples):
 (200, 128)
 (200, 10)
 ```
-
-## Example 2: Model with multi inputs
 
 `model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
