@@ -1,7 +1,7 @@
 # Visualize the Activations of your layers with Keras
 *Code and useful examples to show how to get the activations for each layer for Keras.*
 
-The function to visualize the activations are in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
+The function to visualize the activations is in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
 
 
 Inputs:
@@ -15,13 +15,12 @@ Outputs:
 
 # Example 1: MNIST
 
-I also provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
+I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
 ## Steps
 
-```
-python model_train.py
-```
+Running `python model_train.py` will do:
+
 - define the model
 - if no checkpoints are detected:
   - train the model
@@ -40,7 +39,7 @@ Shapes of the activations (one sample):
 (1, 9216)
 (1, 128)
 (1, 128)
-(1, 10) # output of the softmax!
+(1, 10) # softmax output!
 ```
 
 Shapes of the activations (200 samples):
