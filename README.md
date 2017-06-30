@@ -1,4 +1,4 @@
-# Visualize the Activations of your layers with Keras
+# Extract the Activation Maps of your Keras models
 *Code and useful examples to show how to get the activations for each layer for Keras.*
 
 <hr/>
