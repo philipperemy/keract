@@ -9,7 +9,7 @@ from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
 from data import get_mnist_data, num_classes, input_shape
-from read_activations import get_activations
+from read_activations import get_activations, display_activations
 
 if __name__ == '__main__':
 
@@ -40,10 +40,14 @@ if __name__ == '__main__':
         print('')
         assert test_acc > 0.98
 
-        get_activations(model, x_test[0:1], print_shape_only=True)  # with just one sample.
+        a = get_activations(model, x_test[0:1], print_shape_only=True)  # with just one sample.
+        display_activations(a)
 
         get_activations(model, x_test[0:200], print_shape_only=True)  # with 200 samples.
 
+        # import numpy as np
+        # import matplotlib.pyplot as plt
+        # plt.imshow(np.squeeze(x_test[0:1]), interpolation='None', cmap='gray')
     else:
         x_train, y_train, x_test, y_test = get_mnist_data()
 
