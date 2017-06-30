@@ -1,8 +1,38 @@
 # Visualize the Activations of your layers with Keras
 *Code and useful examples to show how to get the activations for each layer for Keras.*
 
-The function to visualize the activations is in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
+<hr/>
 
+<p align="center">
+  <img src="assets/0.png" width="50">
+  <br><i>A random seven from MNIST</i>
+</p>
+
+<hr/>
+
+<p align="center">
+  <img src="assets/1.png">
+  <br><i>Activation map of CONV1 of LeNet</i>
+</p>
+
+<hr/>
+
+<p align="center">
+  <img src="assets/2.png" width="200">
+  <br><i>Activation map of FC1 of LeNet</i>
+</p>
+
+<hr/>
+
+<p align="center">
+  <img src="assets/3.png">
+  <br><i>Activation map of Softmax of LeNet. <b>Yes it's a seven!</b></i>
+</p>
+
+<hr/>
+
+
+The function to visualize the activations is in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
 
 Inputs:
 - `model`: Keras model
