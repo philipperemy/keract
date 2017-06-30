@@ -1,7 +1,9 @@
 # Extract the Activation Maps of your Keras models
+[![license](https://img.shields.io/badge/License-Apache_2.0-brightgreen.svg)](https://github.com/philipperemy/keras-attention-mechanism/blob/master/LICENSE) [![dep1](https://img.shields.io/badge/Tensorflow-1.2+-blue.svg)](https://www.tensorflow.org/) [![dep2](https://img.shields.io/badge/Keras-2.0+-blue.svg)](https://keras.io/) 
+
 *Code and useful examples to show how to get the activations for each layer for Keras.*
 
-<hr/>
+## Example
 
 <p align="center">
   <img src="assets/0.png" width="50">
@@ -43,7 +45,7 @@ Inputs:
 Outputs:
 - returns a list of each layer (by order of definition) and the corresponding activations.
 
-# Example 1: MNIST
+## Example 1: MNIST
 
 I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
 
@@ -85,6 +87,6 @@ Shapes of the activations (200 samples):
 (200, 10)
 ```
 
-# Example 2: Model with multi inputs
+## Example 2: Model with multi inputs
 
 `model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
