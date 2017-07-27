@@ -1,3 +1,4 @@
 Keras==2.0.2
 natsort==5.0.2
 numpy==1.12.1
+h5py

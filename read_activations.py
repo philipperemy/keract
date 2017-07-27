@@ -1,5 +1,7 @@
+import keras.backend as K
+
+
 def get_activations(model, model_inputs, print_shape_only=False, layer_name=None):
-    import keras.backend as K
     print('----- activations -----')
     activations = []
     inp = model.input
