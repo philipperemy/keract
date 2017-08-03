@@ -21,7 +21,7 @@
 
 
 <p align="center">
-  <img src="assets/3.png">
+  <img src="assets/3.png" width="300">
   <br><i>Activation map of Softmax of LeNet. <b>Yes it's a seven!</b></i>
 </p>
 
