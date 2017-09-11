@@ -20,12 +20,12 @@ def get_activations(model, model_inputs, print_shape_only=False, layer_name=None
     if model_multi_inputs_cond:
         list_inputs = []
         list_inputs.extend(model_inputs)
-        list_inputs.append(1.)
+        list_inputs.append(0.)
     else:
-        list_inputs = [model_inputs, 1.]
+        list_inputs = [model_inputs, 0.]
 
-    # Learning phase. 1 = Test mode (no dropout or batch normalization)
-    # layer_outputs = [func([model_inputs, 1.])[0] for func in funcs]
+    # Learning phase. 0 = Test mode (no dropout or batch normalization)
+    # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
     layer_outputs = [func(list_inputs)[0] for func in funcs]
     for layer_activations in layer_outputs:
         activations.append(layer_activations)
