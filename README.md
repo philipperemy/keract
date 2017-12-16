@@ -3,6 +3,34 @@
 
 *Short code and useful examples to show how to get the activations for each layer for Keras.*
 
+**-> Works for any kind of model (recurrent, convolutional, residuals...). Not only for images!**
+
+Shapes of the activations (one sample) on Keras CNN MNIST:
+```
+----- activations -----
+(1, 26, 26, 32)
+(1, 24, 24, 64)
+(1, 12, 12, 64)
+(1, 12, 12, 64)
+(1, 9216)
+(1, 128)
+(1, 128)
+(1, 10) # softmax output!
+```
+
+Shapes of the activations (200 samples) on Keras CNN MNIST:
+```
+----- activations -----
+(200, 26, 26, 32)
+(200, 24, 24, 64)
+(200, 12, 12, 64)
+(200, 12, 12, 64)
+(200, 9216)
+(200, 128)
+(200, 128)
+(200, 10)
+```
+
 <p align="center">
   <img src="assets/0.png" width="50">
   <br><i>A random seven from MNIST</i>
@@ -48,31 +76,5 @@ Running `python model_train.py` will do:
   - save the best model in checkpoints/
 - load the model from the best checkpoint
 - read the activations
-
-Shapes of the activations (one sample):
-```
------ activations -----
-(1, 26, 26, 32)
-(1, 24, 24, 64)
-(1, 12, 12, 64)
-(1, 12, 12, 64)
-(1, 9216)
-(1, 128)
-(1, 128)
-(1, 10) # softmax output!
-```
-
-Shapes of the activations (200 samples):
-```
------ activations -----
-(200, 26, 26, 32)
-(200, 24, 24, 64)
-(200, 12, 12, 64)
-(200, 12, 12, 64)
-(200, 9216)
-(200, 128)
-(200, 128)
-(200, 10)
-```
 
 `model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
