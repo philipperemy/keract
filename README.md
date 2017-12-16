@@ -5,6 +5,8 @@
 
 **-> Works for any kind of model (recurrent, convolutional, residuals...). Not only for images!**
 
+## Example of MNIST
+
 Shapes of the activations (one sample) on Keras CNN MNIST:
 ```
 ----- activations -----
@@ -18,7 +20,7 @@ Shapes of the activations (one sample) on Keras CNN MNIST:
 (1, 10) # softmax output!
 ```
 
-Shapes of the activations (200 samples) on Keras CNN MNIST:
+Shapes of the activations (batch of 200 samples) on Keras CNN MNIST:
 ```
 ----- activations -----
 (200, 26, 26, 32)
