@@ -68,7 +68,7 @@ Inputs:
 Outputs:
 - returns a list of each layer (by order of definition) and its corresponding activations.
 
-I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two are done sequentially, we have to re-train the model every time we want to visualize the activations! Not very practical! Here are the main steps:
+I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two were to be done sequentially, we would have to re-train the model every time we would like to visualize the activations! Not very practical! Here are the main steps:
 
 Running `python model_train.py` will do:
 
