@@ -1,7 +1,8 @@
-import keras.backend as K
 import numpy as np
 from keras.layers import merge, Dense
 from keras.models import Input, Model, Sequential
+
+from keract import get_activations
 
 
 def get_multi_inputs_model():
@@ -20,7 +21,6 @@ def get_single_inputs_model():
 
 
 if __name__ == '__main__':
-
     m = get_multi_inputs_model()
     m.compile(optimizer='adam',
               loss='binary_crossentropy')
@@ -30,14 +30,12 @@ if __name__ == '__main__':
     inp_o = np.random.randint(low=0, high=2, size=(100, 1))
     m.fit([inp_a, inp_b], inp_o)
 
-    from read_activations import *
-
-    get_activations(m, [inp_a[0:1], inp_b[0:1]], print_shape_only=True)
-    get_activations(m, [inp_a[0:1], inp_b[0:1]], print_shape_only=True, layer_name='only_this_layer')
+    print('\n'.join([str(v.shape) for v in get_activations(m, [inp_a[0:1], inp_b[0:1]])]))
+    get_activations(m, [inp_a[0:1], inp_b[0:1]], layer_name='only_this_layer')
 
     m2 = get_single_inputs_model()
     m2.compile(optimizer='adam',
                loss='binary_crossentropy')
     m2.fit([inp_a], inp_o)
 
-    get_activations(m2, [inp_a[0]], print_shape_only=True)
+    get_activations(m2, [inp_a[0]])

@@ -1,15 +1,14 @@
 from __future__ import print_function
 
-from glob import glob
-
 import keras
+from glob import glob
 from keras.callbacks import ModelCheckpoint
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
 from data import get_mnist_data, num_classes, input_shape
-from read_activations import get_activations, display_activations
+from keract import get_activations, display_activations
 
 if __name__ == '__main__':
 
@@ -40,10 +39,10 @@ if __name__ == '__main__':
         print('')
         assert test_acc > 0.98
 
-        a = get_activations(model, x_test[0:1], print_shape_only=True)  # with just one sample.
+        a = get_activations(model, x_test[0:1])  # with just one sample.
         display_activations(a)
 
-        get_activations(model, x_test[0:200], print_shape_only=True)  # with 200 samples.
+        print('\n'.join([str(v.shape) for v in get_activations(model, x_test[0:200])]))  # with 200 samples.
 
         # import numpy as np
         # import matplotlib.pyplot as plt
