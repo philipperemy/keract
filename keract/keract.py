@@ -1,8 +1,7 @@
 import keras.backend as K
 
 
-def get_activations(model, model_inputs, print_shape_only=False, layer_name=None):
-    print('----- activations -----')
+def get_activations(model, model_inputs, layer_name=None):
     activations = []
     inp = model.input
 
@@ -29,10 +28,10 @@ def get_activations(model, model_inputs, print_shape_only=False, layer_name=None
     layer_outputs = [func(list_inputs)[0] for func in funcs]
     for layer_activations in layer_outputs:
         activations.append(layer_activations)
-        if print_shape_only:
-            print(layer_activations.shape)
-        else:
-            print(layer_activations)
+        # if print_shape_only:
+        #     print(layer_activations.shape)
+        # else:
+        #     print(layer_activations)
     return activations
 
 

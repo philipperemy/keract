@@ -1,5 +1,4 @@
 import keras
-import keras.backend as K
 from keras.datasets import mnist
 
 # input image dimensions
@@ -9,7 +8,6 @@ num_classes = 10
 
 
 def get_mnist_data():
-
     # the data, shuffled and split between train and test sets
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
