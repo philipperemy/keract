@@ -1,37 +1,69 @@
-# Extract the activation maps of your Keras models
-[![license](https://img.shields.io/badge/License-Apache_2.0-brightgreen.svg)](https://github.com/philipperemy/keras-attention-mechanism/blob/master/LICENSE) [![dep1](https://img.shields.io/badge/Tensorflow-1.2+-blue.svg)](https://www.tensorflow.org/) [![dep2](https://img.shields.io/badge/Keras-2.0+-blue.svg)](https://keras.io/) 
-
-*Short code and useful examples to show how to get the activations for each layer for Keras.*
-
-**-> Works for any kind of model (recurrent, convolutional, residuals...). Not only for images!**
-
-## Example of MNIST
-
-Shapes of the activations (one sample) on Keras CNN MNIST:
+# Keras Activations
 ```
------ activations -----
-(1, 26, 26, 32)
-(1, 24, 24, 64)
-(1, 12, 12, 64)
-(1, 12, 12, 64)
-(1, 9216)
-(1, 128)
-(1, 128)
-(1, 10) # softmax output!
+pip install keract
+```
+*Get the activations for each layer for Keras and for any type of model (recurrent nets, conv nets, resnets...).*
+
+## API
+
+```
+from keract import get_activations
+get_activations(model, x)
 ```
 
-Shapes of the activations (batch of 200 samples) on Keras CNN MNIST:
+### Inputs
+- `model` is a `keras.models.Model` object
+- `x` a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the same Keras convention (as used in predict, fit...).
+
+### Output
+- A dictionary containing the activations for each layer of `model` for the input `x`:
+
 ```
------ activations -----
-(200, 26, 26, 32)
-(200, 24, 24, 64)
-(200, 12, 12, 64)
-(200, 12, 12, 64)
-(200, 9216)
-(200, 128)
-(200, 128)
-(200, 10)
+{
+  'conv2d_1/Relu:0': np.array(...),
+  'conv2d_2/Relu:0': np.array(...),
+  ...,
+  'dense_2/Softmax:0': np.array(...)
+}
 ```
+
+
+## Examples
+
+Examples are provided for:
+- `keras.models.Sequential` - mnist.py
+- `keras.models.Model` - multi_inputs.py
+- Recurrent networks - recurrent.py
+
+In the case of MNIST with LeNet, we are able to fetch the activations for a batch of size 128:
+
+```
+conv2d_1/Relu:0
+(128, 26, 26, 32)
+
+conv2d_2/Relu:0
+(128, 24, 24, 64)
+
+max_pooling2d_1/MaxPool:0
+(128, 12, 12, 64)
+
+dropout_1/cond/Merge:0
+(128, 12, 12, 64)
+
+flatten_1/Reshape:0
+(128, 9216)
+
+dense_1/Relu:0
+(128, 128)
+
+dropout_2/cond/Merge:0
+(128, 128)
+
+dense_2/Softmax:0
+(128, 10)
+```
+
+We can even visualise some of them.
 
 <p align="center">
   <img src="assets/0.png" width="50">
@@ -55,54 +87,3 @@ Shapes of the activations (batch of 200 samples) on Keras CNN MNIST:
   <br><i>Activation map of Softmax of LeNet. <b>Yes it's a seven!</b></i>
 </p>
 
-<hr/>
-
-The function for visualizing the activations is in the script [read_activations.py](https://github.com/philipperemy/keras-visualize-activations/blob/master/read_activations.py)
-
-Inputs:
-- `model`: Keras model
-- `model_inputs`: Model inputs for which we want to get the activations (for example 200 MNIST images)
-- `print_shape_only`: If set to True, will print the entire activations arrays (might be very verbose!)
-- `layer_name`: Will retrieve the activations of a specific layer, if the name matches one of the existing layers of the model.
-
-Outputs:
-- returns a list of each layer (by order of definition) and its corresponding activations.
-
-I provide a simple example to see how it works with the MNIST model. I separated the training and the visualizations because if the two were to be done sequentially, we would have to re-train the model every time we would like to visualize the activations! Not very practical! Here are the main steps:
-
-Running `python model_train.py` will do:
-
-- define the model
-- if no checkpoints are detected:
-  - train the model
-  - save the best model in checkpoints/
-- load the model from the best checkpoint
-- read the activations
-
-Shapes of the activations (one sample):
-```
------ activations -----
-(1, 26, 26, 32)
-(1, 24, 24, 64)
-(1, 12, 12, 64)
-(1, 12, 12, 64)
-(1, 9216)
-(1, 128)
-(1, 128)
-(1, 10) # softmax output!
-```
-
-Shapes of the activations (200 samples):
-```
------ activations -----
-(200, 26, 26, 32)
-(200, 24, 24, 64)
-(200, 12, 12, 64)
-(200, 12, 12, 64)
-(200, 9216)
-(200, 128)
-(200, 128)
-(200, 10)
-```
-
-`multi_inputs.py` contains very simple examples to visualize activations with multi inputs models.
