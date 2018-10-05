@@ -32,6 +32,7 @@ get_activations(model, x)
 }
 ```
 
+The key is the name of the layer and the value is the corresponding output of the layer for the given input `x`.
 
 ## Examples
 
