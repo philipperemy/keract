@@ -13,7 +13,7 @@ get_activations(model, x)
 
 ### Inputs
 - `model` is a `keras.models.Model` object
-- `x` a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the same Keras convention (as used in predict, fit...).
+- `x` a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the Keras convention (as used in predict, fit...).
 
 ### Output
 - A dictionary containing the activations for each layer of `model` for the input `x`:
