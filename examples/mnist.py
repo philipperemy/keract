@@ -1,12 +1,14 @@
 from __future__ import print_function
 
-import keras
 from glob import glob
+
+import keras
 from keras.callbacks import ModelCheckpoint
 from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
+import utils
 from data import get_mnist_data, num_classes, input_shape
 from keract import get_activations, display_activations
 
@@ -35,14 +37,14 @@ if __name__ == '__main__':
         x_train, y_train, x_test, y_test = get_mnist_data()
 
         # checking that the accuracy is the same as before 99% at the first epoch.
-        test_loss, test_acc = model.evaluate(x_test, y_test, verbose=1, batch_size=128)
-        print('')
-        assert test_acc > 0.98
+        # test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0, batch_size=128)
+        # print('')
+        # assert test_acc > 0.98
+
+        utils.print_names_and_shapes(get_activations(model, x_test[0:200]))  # with 200 samples.
 
         a = get_activations(model, x_test[0:1])  # with just one sample.
         display_activations(a)
-
-        print('\n'.join([str(v.shape) for v in get_activations(model, x_test[0:200])]))  # with 200 samples.
 
         # import numpy as np
         # import matplotlib.pyplot as plt
