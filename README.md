@@ -4,6 +4,11 @@ pip install keract
 ```
 *Get the activations for each layer for Keras and for any type of model (recurrent nets, conv nets, resnets...).*
 
+<p align="center">
+  <img src="assets/1.png">
+</p>
+
+
 ## API
 
 ```
