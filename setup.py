@@ -11,3 +11,4 @@ setup(
     packages=['keract'],
     install_requires=['numpy', 'keras']
 )
+
