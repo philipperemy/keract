@@ -75,4 +75,4 @@ Shapes of the activations (200 samples):
 (200, 10)
 ```
 
-`model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
+`multi_inputs.py` contains very simple examples to visualize activations with multi inputs models.

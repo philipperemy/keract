@@ -3,6 +3,7 @@ from keras.layers import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 
+import utils
 from data import get_mnist_data, num_classes
 from keract import get_activations
 
@@ -21,4 +22,4 @@ if __name__ == '__main__':
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
-    print('\n'.join([str(v.shape) for v in get_activations(model, x_train)]))
+    utils.print_names_and_shapes(get_activations(model, x_train))
