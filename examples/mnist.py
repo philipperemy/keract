@@ -12,6 +12,14 @@ import utils
 from data import get_mnist_data, num_classes, input_shape
 from keract import get_activations, display_activations
 
+# What this script does:
+# - define the model
+# - if no checkpoints are detected:
+#   - train the model
+#   - save the best model in checkpoints/
+# - load the model from the best checkpoint
+# - read the activations
+
 if __name__ == '__main__':
 
     checkpoints = glob('checkpoints/*.h5')
