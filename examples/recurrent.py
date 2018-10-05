@@ -22,4 +22,4 @@ if __name__ == '__main__':
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
-    utils.print_names_and_shapes(get_activations(model, x_train))
+    utils.print_names_and_shapes(get_activations(model, x_train[:128]))
