@@ -79,4 +79,30 @@ Running `python model_train.py` will do:
 - load the model from the best checkpoint
 - read the activations
 
-`model_multi_inputs_train.py` contains very simple examples to visualize activations with multi inputs models. 
+Shapes of the activations (one sample):
+```
+----- activations -----
+(1, 26, 26, 32)
+(1, 24, 24, 64)
+(1, 12, 12, 64)
+(1, 12, 12, 64)
+(1, 9216)
+(1, 128)
+(1, 128)
+(1, 10) # softmax output!
+```
+
+Shapes of the activations (200 samples):
+```
+----- activations -----
+(200, 26, 26, 32)
+(200, 24, 24, 64)
+(200, 12, 12, 64)
+(200, 12, 12, 64)
+(200, 9216)
+(200, 128)
+(200, 128)
+(200, 10)
+```
+
+`multi_inputs.py` contains very simple examples to visualize activations with multi inputs models.
