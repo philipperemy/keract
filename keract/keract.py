@@ -14,6 +14,9 @@ def get_activations(model, model_inputs, layer_name=None):
     outputs = [layer.output for layer in model.layers if
                layer.name == layer_name or layer_name is None]  # all layer outputs
 
+    # we remove the placeholders (Inputs node in Keras). Not the most elegant though..
+    outputs = [output for output in outputs if 'input_' not in output.name]
+
     funcs = [K.function(inp + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
 
     if model_multi_inputs_cond:
@@ -25,17 +28,14 @@ def get_activations(model, model_inputs, layer_name=None):
 
     # Learning phase. 0 = Test mode (no dropout or batch normalization)
     # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
-    layer_outputs = [func(list_inputs)[0] for func in funcs]
-    for layer_activations in layer_outputs:
-        activations.append(layer_activations)
-        # if print_shape_only:
-        #     print(layer_activations.shape)
-        # else:
-        #     print(layer_activations)
-    return activations
+    activations = [func(list_inputs)[0] for func in funcs]
+    layer_names = [output.name for output in outputs]
+
+    result = dict(zip(layer_names, activations))
+    return result
 
 
-def display_activations(activation_maps):
+def display_activations(activations):
     import numpy as np
     import matplotlib.pyplot as plt
     """
@@ -48,6 +48,8 @@ def display_activations(activation_maps):
     (1, 128)
     (1, 10)
     """
+    layer_names = list(activations.keys())
+    activation_maps = list(activations.values())
     batch_size = activation_maps[0].shape[0]
     assert batch_size == 1, 'One image at a time to visualize.'
     for i, activation_map in enumerate(activation_maps):
@@ -67,5 +69,6 @@ def display_activations(activation_maps):
                 activations = np.expand_dims(activations, axis=0)
         else:
             raise Exception('len(shape) = 3 has not been implemented.')
+        plt.title(layer_names[i])
         plt.imshow(activations, interpolation='None', cmap='jet')
         plt.show()
