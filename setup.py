@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='keract',
-    version='1.1.1',
+    version='1.1.2',
     description='Keras Activations',
     author='Philippe Remy',
     license='MIT',
