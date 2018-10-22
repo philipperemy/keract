@@ -11,7 +11,7 @@ pip install keract
 
 ## API
 
-```
+```python
 from keract import get_activations
 get_activations(model, x)
 ```
