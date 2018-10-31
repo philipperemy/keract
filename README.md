@@ -93,3 +93,6 @@ We can even visualise some of them.
   <br><i>Activation map of Softmax of LeNet. <b>Yes it's a seven!</b></i>
 </p>
 
+### Repo views (since 2018/10/31)
+[![HitCount](http://hits.dwyl.io/philipperemy/keras-activations.svg)](http://hits.dwyl.io/philipperemy/keras-activations)
+
