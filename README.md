@@ -2,7 +2,7 @@
 ```
 pip install keract
 ```
-*You have just found a (easy) way to get the activations for each layer of your Keras model (LSTM, conv nets...).*
+*You have just found a (easy) way to get the activations (outputs) for each layer of your Keras model (LSTM, conv nets...).*
 
 <p align="center">
   <img src="assets/1.png">
