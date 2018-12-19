@@ -1,5 +1,5 @@
 # Keras Activations
-```
+```bash
 pip install keract
 ```
 *You have just found a (easy) way to get the activations (outputs) for each layer of your Keras model (LSTM, conv nets...).*
