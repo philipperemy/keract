@@ -32,21 +32,12 @@ def _get_gradients(model, x, y, nodes, nodes_names):
 
 def get_activations(model, x, layer_name=None):
     nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
-
     # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
-    input_layer_outputs = []
-    layer_outputs = []
-    for node in nodes:
-        if 'input_' in node.name:
-            input_layer_outputs.append(node)
-        else:
-            layer_outputs.append(node)
-
+    input_layer_outputs, layer_outputs = [], []
+    [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
     activations = _evaluate(model, layer_outputs, x, y=None)
-
     activations_dict = dict(zip([output.name for output in layer_outputs], activations))
     activations_inputs_dict = dict(zip([output.name for output in input_layer_outputs], x))
-
     result = activations_inputs_dict.copy()
     result.update(activations_dict)
     return result
