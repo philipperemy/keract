@@ -10,7 +10,7 @@ from keras.models import Sequential
 
 import utils
 from data import get_mnist_data, num_classes, input_shape
-from keract import get_activations, display_activations, get_gradients_of_weights, get_gradients_of_activations
+from keract import get_activations, display_activations, get_gradients_of_trainable_weights, get_gradients_of_activations
 
 # What this script does:
 # - define the model
@@ -51,7 +51,7 @@ if __name__ == '__main__':
 
         utils.print_names_and_shapes(get_activations(model, x_test[0:200]))  # with 200 samples.
 
-        get_gradients_of_weights(model, x_train[0:10], y_train[0:10])
+        get_gradients_of_trainable_weights(model, x_train[0:10], y_train[0:10])
         get_gradients_of_activations(model, x_train[0:10], y_train[0:10])
 
         a = get_activations(model, x_test[0:1])  # with just one sample.
