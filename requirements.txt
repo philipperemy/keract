@@ -1,6 +1,5 @@
 Keras
 tensorflow
-natsort
 numpy
 h5py
 matplotlib

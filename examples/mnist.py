@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import os
 from glob import glob
 
 import keras
@@ -8,9 +9,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
+import keract
 import utils
 from data import get_mnist_data, num_classes, input_shape
-from keract import get_activations, display_activations
 
 # What this script does:
 # - define the model
@@ -21,16 +22,15 @@ from keract import get_activations, display_activations
 # - read the activations
 
 if __name__ == '__main__':
+    checkpoint_dir = 'checkpoints'
 
-    checkpoints = glob('checkpoints/*.h5')
-    # pip3 install natsort
-    from natsort import natsorted
+    checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
 
     from keras.models import load_model
 
     if len(checkpoints) > 0:
 
-        checkpoints = natsorted(checkpoints)
+        checkpoints = sorted(checkpoints)  # pip install natsort: natsorted() would be a better choice..
         assert len(checkpoints) != 0, 'No checkpoints found.'
         checkpoint_file = checkpoints[-1]
         print('Loading [{}]'.format(checkpoint_file))
@@ -49,10 +49,12 @@ if __name__ == '__main__':
         # print('')
         # assert test_acc > 0.98
 
-        utils.print_names_and_shapes(get_activations(model, x_test[0:200]))  # with 200 samples.
+        utils.print_names_and_shapes(keract.get_activations(model, x_test[0:200]))  # with 200 samples.
+        utils.print_names_and_shapes(keract.get_gradients_of_trainable_weights(model, x_train[0:10], y_train[0:10]))
+        utils.print_names_and_shapes(keract.get_gradients_of_activations(model, x_train[0:10], y_train[0:10]))
 
-        a = get_activations(model, x_test[0:1])  # with just one sample.
-        display_activations(a)
+        a = keract.get_activations(model, x_test[0:1])  # with just one sample.
+        keract.display_activations(a)
 
         # import numpy as np
         # import matplotlib.pyplot as plt
@@ -76,20 +78,15 @@ if __name__ == '__main__':
                       optimizer=keras.optimizers.Adadelta(),
                       metrics=['accuracy'])
 
-        # Change starts here
         import shutil
-        import os
 
         # delete folder and its content and creates a new one.
-        try:
-            shutil.rmtree('checkpoints')
-        except:
-            pass
-        os.mkdir('checkpoints')
+        if os.path.exists(checkpoint_dir):
+            shutil.rmtree(checkpoint_dir)
+        os.makedirs(checkpoint_dir)
 
-        checkpoint = ModelCheckpoint(monitor='val_acc',
-                                     filepath='checkpoints/model_{epoch:02d}_{val_acc:.3f}.h5',
-                                     save_best_only=True)
+        checkpoint = ModelCheckpoint(monitor='val_acc', save_best_only=True,
+                                     filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_acc:.3f}.h5'))
 
         model.fit(x_train, y_train,
                   batch_size=128,
@@ -97,8 +94,6 @@ if __name__ == '__main__':
                   verbose=1,
                   validation_data=(x_test, y_test),
                   callbacks=[checkpoint])
-
-        # Change finishes here
 
         score = model.evaluate(x_test, y_test, verbose=0)
         print('Test loss:', score[0])
