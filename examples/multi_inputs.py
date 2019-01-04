@@ -40,7 +40,7 @@ if __name__ == '__main__':
     utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c))
 
     # Just get the last layer!
-    print(keract.get_activations(m1, [inp_a, inp_b], layer_name='last_layer'))
+    utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b], layer_name='last_layer'))
     utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c,
                                                                      layer_name='last_layer'))
     print('')
