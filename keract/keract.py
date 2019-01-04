@@ -65,12 +65,9 @@ def display_activations(activations):
     (1, 128)
     (1, 10)
     """
-    layer_names = list(activations.keys())
-    activation_maps = list(activations.values())
-    batch_size = activation_maps[0].shape[0]
-    assert batch_size == 1, 'One image at a time to visualize.'
-    for i, activation_map in enumerate(activation_maps):
-        print('Displaying activation map {}'.format(i))
+    for name, activation_map in activations.items():
+        assert activation_map.shape[0] == 1, 'One image at a time to visualize.'
+        print('Displaying activation map [{}]'.format(name))
         shape = activation_map.shape
         if len(shape) == 4:
             activations = np.hstack(np.transpose(activation_map[0], (2, 0, 1)))
@@ -86,6 +83,6 @@ def display_activations(activations):
                 activations = np.expand_dims(activations, axis=0)
         else:
             raise Exception('len(shape) = 3 has not been implemented.')
-        plt.title(layer_names[i])
+        plt.title(name)
         plt.imshow(activations, interpolation='None', cmap='jet')
         plt.show()
