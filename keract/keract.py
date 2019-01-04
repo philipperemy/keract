@@ -1,4 +1,12 @@
 import keras.backend as K
+from keras.models import Model
+
+
+def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
+    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    f = K.function(symb_inputs, nodes_to_evaluate)
+    x_, y_, sample_weight_ = model._standardize_user_data(x, y)
+    return f(x_ + y_ + sample_weight_)
 
 
 # looks good.
@@ -6,10 +14,7 @@ def get_gradients_of_weights(model, model_inputs, outputs):
     if model.optimizer is None:
         raise Exception('Please compile your model first.')
     grads = model.optimizer.get_gradients(model.total_loss, model.trainable_weights)
-    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
-    f = K.function(symb_inputs, grads)
-    x, y, sample_weight = model._standardize_user_data(model_inputs, outputs)
-    output_grad = f(x + y + sample_weight)
+    output_grad = _evaluate(model, grads, model_inputs, outputs)
     weight_names = [w.name for w in model.trainable_weights]
     result = dict(zip(weight_names, output_grad))
     return result
@@ -22,10 +27,7 @@ def get_gradients_of_activations(model, model_inputs, outputs, layer_name=None):
     # grads = model.optimizer.get_gradients(model.total_loss, model.layers[layer].output)
     layer_names = [l.output.name for l in model.layers]
     grads = model.optimizer.get_gradients(model.total_loss, [l.output for l in model.layers])
-    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
-    f = K.function(symb_inputs, grads)
-    x, y, sample_weight = model._standardize_user_data(model_inputs, outputs)
-    output_grad = f(x + y + sample_weight)
+    output_grad = _evaluate(model, grads, model_inputs, outputs)
     result = dict(zip(layer_names, output_grad))
     return result
 
@@ -42,11 +44,7 @@ def get_activations(model, model_inputs, layer_name=None):
         else:
             layer_outputs.append(output)
 
-    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
-    f = K.function(symb_inputs, layer_outputs)
-    x, y, sample_weight = model._standardize_user_data(x=model_inputs, y=None)
-    activations = f(x + y + sample_weight)
-
+    activations = _evaluate(model, layer_outputs, model_inputs, None)
     names = [output.name for output in layer_outputs]
     result = dict(zip(names, activations))
 
