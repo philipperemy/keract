@@ -36,12 +36,12 @@ if __name__ == '__main__':
     m1 = get_multi_inputs_model()
     m1.compile(optimizer='adam', loss='mse')
     utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b]))
-    keract.get_gradients_of_weights(m1, [inp_a, inp_b], out_c)
+    keract.get_gradients_of_trainable_weights(m1, [inp_a, inp_b], out_c)
     keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c)
 
     # Just get the last layer!
     print(keract.get_activations(m1, [inp_a, inp_b], layer_name='last_layer'))
-    keract.get_gradients_of_weights(m1, [inp_a, inp_b], out_c)
+    keract.get_gradients_of_trainable_weights(m1, [inp_a, inp_b], out_c)
     keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c, layer_name='last_layer')
     print('')
 
@@ -49,5 +49,5 @@ if __name__ == '__main__':
     m2 = get_single_inputs_model()
     m2.compile(optimizer='adam', loss='mse')
     utils.print_names_and_values(keract.get_activations(m2, inp_a))
-    keract.get_gradients_of_weights(m2, inp_a, out_c)
+    keract.get_gradients_of_trainable_weights(m2, inp_a, out_c)
     keract.get_gradients_of_activations(m2, inp_a, out_c)

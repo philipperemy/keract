@@ -9,52 +9,47 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
     return f(x_ + y_ + sample_weight_)
 
 
-# looks good.
-def get_gradients_of_weights(model, model_inputs, outputs):
+def get_gradients_of_trainable_weights(model, x, y):
+    nodes = model.trainable_weights
+    nodes_names = [w.name for w in nodes]
+    return _get_gradients(model, x, y, nodes, nodes_names)
+
+
+def get_gradients_of_activations(model, x, y, layer_name=None):
+    nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+    nodes_names = [n.name for n in nodes]
+    return _get_gradients(model, x, y, nodes, nodes_names)
+
+
+def _get_gradients(model, x, y, nodes, nodes_names):
     if model.optimizer is None:
-        raise Exception('Please compile your model first.')
-    grads = model.optimizer.get_gradients(model.total_loss, model.trainable_weights)
-    output_grad = _evaluate(model, grads, model_inputs, outputs)
-    weight_names = [w.name for w in model.trainable_weights]
-    result = dict(zip(weight_names, output_grad))
+        raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
+    grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    gradients_values = _evaluate(model, grads, x, y)
+    result = dict(zip(nodes_names, gradients_values))
     return result
 
 
-def get_gradients_of_activations(model, model_inputs, outputs, layer_name=None):
-    if model.optimizer is None:
-        raise Exception('Please compile your model first.')
-    """ Gets gradient a layer output for given inputs and outputs"""
-    # grads = model.optimizer.get_gradients(model.total_loss, model.layers[layer].output)
-    layer_names = [l.output.name for l in model.layers]
-    grads = model.optimizer.get_gradients(model.total_loss, [l.output for l in model.layers])
-    output_grad = _evaluate(model, grads, model_inputs, outputs)
-    result = dict(zip(layer_names, output_grad))
-    return result
-
-
-def get_activations(model, model_inputs, layer_name=None):
-    outputs = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+def get_activations(model, x, layer_name=None):
+    nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
 
     # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
     input_layer_outputs = []
     layer_outputs = []
-    for output in outputs:
-        if 'input_' in output.name:
-            input_layer_outputs.append(output)
+    for node in nodes:
+        if 'input_' in node.name:
+            input_layer_outputs.append(node)
         else:
-            layer_outputs.append(output)
+            layer_outputs.append(node)
 
-    activations = _evaluate(model, layer_outputs, model_inputs, None)
-    names = [output.name for output in layer_outputs]
-    result = dict(zip(names, activations))
+    activations = _evaluate(model, layer_outputs, x, y=None)
 
-    # add back the input layers.
-    input_names = [output.name for output in input_layer_outputs]
-    input_result = dict(zip(input_names, model_inputs))
+    activations_dict = dict(zip([output.name for output in layer_outputs], activations))
+    activations_inputs_dict = dict(zip([output.name for output in input_layer_outputs], x))
 
-    z = input_result.copy()
-    z.update(result)
-    return z
+    result = activations_inputs_dict.copy()
+    result.update(activations_dict)
+    return result
 
 
 def display_activations(activations):
