@@ -25,14 +25,12 @@ if __name__ == '__main__':
     checkpoint_dir = 'checkpoints'
 
     checkpoints = glob(os.path.join('examples', checkpoint_dir, '*.h5'))
-    # pip3 install natsort
-    from natsort import natsorted
 
     from keras.models import load_model
 
     if len(checkpoints) > 0:
 
-        checkpoints = natsorted(checkpoints)
+        checkpoints = sorted(checkpoints)  # pip install natsort would be better suited.
         assert len(checkpoints) != 0, 'No checkpoints found.'
         checkpoint_file = checkpoints[-1]
         print('Loading [{}]'.format(checkpoint_file))
