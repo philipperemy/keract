@@ -38,8 +38,8 @@ The key is the name of the layer and the value is the corresponding output of th
 
 ### Get gradients of weights
 - `model` is a `keras.models.Model` object.
-- `x` Input data (numpy array).
-- `y`: Labels (numpy array).
+- `x` Input data (numpy array). Keras convention.
+- `y`: Labels (numpy array). Keras convention.
 
 ```python
 from keract import get_gradients_of_trainable_weights
@@ -51,8 +51,8 @@ The output is a dictionary mapping each trainable weight to the values of its gr
 ### Get gradients of get_gradients_of_activations
 
 - `model` is a `keras.models.Model` object.
-- `x` Input data (numpy array).
-- `y`: Labels (numpy array).
+- `x` Input data (numpy array). Keras convention.
+- `y`: Labels (numpy array). Keras convention.
 
 ```python
 from keract import get_gradients_of_activations
