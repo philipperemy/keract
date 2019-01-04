@@ -2,15 +2,11 @@ from __future__ import print_function
 
 from glob import glob
 
-import keras
-from keras.callbacks import ModelCheckpoint
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Dense, Dropout, Flatten
-from keras.models import Sequential
+import keras.backend as K
+import numpy as np
+from scipy.misc import imresize
 
-import utils
-from data import get_mnist_data, num_classes, input_shape
-from keract import get_activations, display_activations
+from data import get_mnist_data
 
 # What this script does:
 # - define the model
@@ -22,7 +18,7 @@ from keract import get_activations, display_activations
 
 if __name__ == '__main__':
 
-    checkpoints = glob('checkpoints/*.h5')
+    checkpoints = glob('examples/checkpoints/*.h5')
     # pip3 install natsort
     from natsort import natsorted
 
@@ -39,67 +35,24 @@ if __name__ == '__main__':
         model.compile(optimizer='adam',
                       loss='categorical_crossentropy',
                       metrics=['accuracy'])
-
         print(model.summary())
 
+        image_id = 33
+        conv_output = model.layers[1].output
         x_train, y_train, x_test, y_test = get_mnist_data()
+        conv_output_grads = K.gradients(model.total_loss, conv_output)[0]
+        inputs = model._feed_inputs + model._feed_targets + model._feed_sample_weights + [K.learning_phase()]
+        gradient_func = K.function(inputs, [conv_output_grads, conv_output])
+        output_grad, output_activations = gradient_func([[x_train[image_id]], [y_train[image_id]], [1], False])
+        mul_grad_act = np.sum(np.abs(output_grad * output_activations), axis=-1).squeeze()
 
-        # checking that the accuracy is the same as before 99% at the first epoch.
-        # test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0, batch_size=128)
-        # print('')
-        # assert test_acc > 0.98
+        import matplotlib.pyplot as plt
 
-        utils.print_names_and_shapes(get_activations(model, x_test[0:200]))  # with 200 samples.
+        plt.imshow(x_train[image_id].squeeze())
+        plt.show()
 
-        a = get_activations(model, x_test[0:1])  # with just one sample.
-        display_activations(a)
+        plt.imshow(imresize(mul_grad_act, (28, 28)))
+        plt.show()
 
-        # import numpy as np
-        # import matplotlib.pyplot as plt
-        # plt.imshow(np.squeeze(x_test[0:1]), interpolation='None', cmap='gray')
     else:
-        x_train, y_train, x_test, y_test = get_mnist_data()
-
-        model = Sequential()
-        model.add(Conv2D(32, kernel_size=(3, 3),
-                         activation='relu',
-                         input_shape=input_shape))
-        model.add(Conv2D(64, (3, 3), activation='relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.25))
-        model.add(Flatten())
-        model.add(Dense(128, activation='relu'))
-        model.add(Dropout(0.5))
-        model.add(Dense(num_classes, activation='softmax'))
-
-        model.compile(loss=keras.losses.categorical_crossentropy,
-                      optimizer=keras.optimizers.Adadelta(),
-                      metrics=['accuracy'])
-
-        # Change starts here
-        import shutil
-        import os
-
-        # delete folder and its content and creates a new one.
-        try:
-            shutil.rmtree('checkpoints')
-        except:
-            pass
-        os.mkdir('checkpoints')
-
-        checkpoint = ModelCheckpoint(monitor='val_acc',
-                                     filepath='checkpoints/model_{epoch:02d}_{val_acc:.3f}.h5',
-                                     save_best_only=True)
-
-        model.fit(x_train, y_train,
-                  batch_size=128,
-                  epochs=12,
-                  verbose=1,
-                  validation_data=(x_test, y_test),
-                  callbacks=[checkpoint])
-
-        # Change finishes here
-
-        score = model.evaluate(x_test, y_test, verbose=0)
-        print('Test loss:', score[0])
-        print('Test accuracy:', score[1])
+        pass

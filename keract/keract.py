@@ -2,7 +2,6 @@ import keras.backend as K
 
 
 def get_activations(model, model_inputs, layer_name=None):
-    activations = []
     inp = model.input
 
     model_multi_inputs_cond = True
