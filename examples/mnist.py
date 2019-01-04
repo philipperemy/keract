@@ -52,9 +52,8 @@ if __name__ == '__main__':
         # assert test_acc > 0.98
 
         utils.print_names_and_shapes(keract.get_activations(model, x_test[0:200]))  # with 200 samples.
-
-        keract.get_gradients_of_trainable_weights(model, x_train[0:10], y_train[0:10])
-        keract.get_gradients_of_activations(model, x_train[0:10], y_train[0:10])
+        utils.print_names_and_shapes(keract.get_gradients_of_trainable_weights(model, x_train[0:10], y_train[0:10]))
+        utils.print_names_and_shapes(keract.get_gradients_of_activations(model, x_train[0:10], y_train[0:10]))
 
         a = keract.get_activations(model, x_test[0:1])  # with just one sample.
         keract.display_activations(a)

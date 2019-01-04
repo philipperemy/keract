@@ -23,5 +23,5 @@ if __name__ == '__main__':
                   metrics=['accuracy'])
 
     utils.print_names_and_shapes(keract.get_activations(model, x_train[:128]))
-    keract.get_gradients_of_trainable_weights(model, x_train[:128], y_train[:128])
-    keract.get_gradients_of_activations(model, x_train[:128], y_train[:128])
+    utils.print_names_and_shapes(keract.get_gradients_of_trainable_weights(model, x_train[:128], y_train[:128]))
+    utils.print_names_and_shapes(keract.get_gradients_of_activations(model, x_train[:128], y_train[:128]))
