@@ -1,6 +1,35 @@
 import keras.backend as K
 
 
+# looks good.
+def get_gradients_of_weights(model, model_inputs, outputs):
+    if model.optimizer is None:
+        raise Exception('Please compile your model first.')
+    grads = model.optimizer.get_gradients(model.total_loss, model.trainable_weights)
+    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    f = K.function(symb_inputs, grads)
+    x, y, sample_weight = model._standardize_user_data(model_inputs, outputs)
+    output_grad = f(x + y + sample_weight)
+    weight_names = [w.name for w in model.trainable_weights]
+    result = dict(zip(weight_names, output_grad))
+    return result
+
+
+def get_gradients_of_activations(model, model_inputs, outputs, layer_name=None):
+    if model.optimizer is None:
+        raise Exception('Please compile your model first.')
+    """ Gets gradient a layer output for given inputs and outputs"""
+    # grads = model.optimizer.get_gradients(model.total_loss, model.layers[layer].output)
+    layer_names = [l.output.name for l in model.layers]
+    grads = model.optimizer.get_gradients(model.total_loss, [l.output for l in model.layers])
+    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    f = K.function(symb_inputs, grads)
+    x, y, sample_weight = model._standardize_user_data(model_inputs, outputs)
+    output_grad = f(x + y + sample_weight)
+    result = dict(zip(layer_names, output_grad))
+    return result
+
+
 def get_activations(model, model_inputs, layer_name=None):
     inp = model.input
 
@@ -28,9 +57,9 @@ def get_activations(model, model_inputs, layer_name=None):
     # Learning phase. 0 = Test mode (no dropout or batch normalization)
     # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
     activations = [func(list_inputs)[0] for func in funcs]
-    layer_names = [output.name for output in outputs]
+    names = [output.name for output in outputs]
 
-    result = dict(zip(layer_names, activations))
+    result = dict(zip(names, activations))
     return result
 
 
