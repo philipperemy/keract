@@ -1,4 +1,4 @@
-# Keras Activations + Gradients
+# Keract: Keras Activations + Gradients
 ```bash
 pip install keract
 ```
