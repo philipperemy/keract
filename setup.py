@@ -2,8 +2,8 @@ from setuptools import setup
 
 setup(
     name='keract',
-    version='1.1.2',
-    description='Keras Activations',
+    version='2.1.1',
+    description='Keras Activations and Gradients',
     author='Philippe Remy',
     license='MIT',
     long_description_content_type='text/markdown',
@@ -11,4 +11,3 @@ setup(
     packages=['keract'],
     install_requires=['numpy', 'keras']
 )
-
