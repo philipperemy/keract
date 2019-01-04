@@ -3,12 +3,12 @@ from keras.layers import Dense
 from keras.layers.recurrent import LSTM
 from keras.models import Sequential
 
+import keract
 import utils
 from data import get_mnist_data, num_classes
-from keract import get_activations
 
 if __name__ == '__main__':
-    x_train, _, _, _ = get_mnist_data()
+    x_train, y_train, _, _ = get_mnist_data()
 
     # (60000, 28, 28, 1) to ((60000, 28, 28)
     # LSTM has (batch, time_steps, input_dim)
@@ -22,4 +22,6 @@ if __name__ == '__main__':
                   optimizer=keras.optimizers.Adadelta(),
                   metrics=['accuracy'])
 
-    utils.print_names_and_shapes(get_activations(model, x_train[:128]))
+    utils.print_names_and_shapes(keract.get_activations(model, x_train[:128]))
+    utils.print_names_and_shapes(keract.get_gradients_of_trainable_weights(model, x_train[:128], y_train[:128]))
+    utils.print_names_and_shapes(keract.get_gradients_of_activations(model, x_train[:128], y_train[:128]))

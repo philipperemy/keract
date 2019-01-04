@@ -1,36 +1,45 @@
 import keras.backend as K
+from keras.models import Model
 
 
-def get_activations(model, model_inputs, layer_name=None):
-    inp = model.input
+def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
+    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    f = K.function(symb_inputs, nodes_to_evaluate)
+    x_, y_, sample_weight_ = model._standardize_user_data(x, y)
+    return f(x_ + y_ + sample_weight_)
 
-    model_multi_inputs_cond = True
-    if not isinstance(inp, list):
-        # only one input! let's wrap it in a list.
-        inp = [inp]
-        model_multi_inputs_cond = False
 
-    outputs = [layer.output for layer in model.layers if
-               layer.name == layer_name or layer_name is None]  # all layer outputs
+def get_gradients_of_trainable_weights(model, x, y):
+    nodes = model.trainable_weights
+    nodes_names = [w.name for w in nodes]
+    return _get_gradients(model, x, y, nodes, nodes_names)
 
-    # we remove the placeholders (Inputs node in Keras). Not the most elegant though..
-    outputs = [output for output in outputs if 'input_' not in output.name]
 
-    funcs = [K.function(inp + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
+def get_gradients_of_activations(model, x, y, layer_name=None):
+    nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+    nodes_names = [n.name for n in nodes]
+    return _get_gradients(model, x, y, nodes, nodes_names)
 
-    if model_multi_inputs_cond:
-        list_inputs = []
-        list_inputs.extend(model_inputs)
-        list_inputs.append(0.)
-    else:
-        list_inputs = [model_inputs, 0.]
 
-    # Learning phase. 0 = Test mode (no dropout or batch normalization)
-    # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
-    activations = [func(list_inputs)[0] for func in funcs]
-    layer_names = [output.name for output in outputs]
+def _get_gradients(model, x, y, nodes, nodes_names):
+    if model.optimizer is None:
+        raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
+    grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    gradients_values = _evaluate(model, grads, x, y)
+    result = dict(zip(nodes_names, gradients_values))
+    return result
 
-    result = dict(zip(layer_names, activations))
+
+def get_activations(model, x, layer_name=None):
+    nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+    # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
+    input_layer_outputs, layer_outputs = [], []
+    [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
+    activations = _evaluate(model, layer_outputs, x, y=None)
+    activations_dict = dict(zip([output.name for output in layer_outputs], activations))
+    activations_inputs_dict = dict(zip([output.name for output in input_layer_outputs], x))
+    result = activations_inputs_dict.copy()
+    result.update(activations_dict)
     return result
 
 
@@ -47,12 +56,9 @@ def display_activations(activations):
     (1, 128)
     (1, 10)
     """
-    layer_names = list(activations.keys())
-    activation_maps = list(activations.values())
-    batch_size = activation_maps[0].shape[0]
-    assert batch_size == 1, 'One image at a time to visualize.'
-    for i, activation_map in enumerate(activation_maps):
-        print('Displaying activation map {}'.format(i))
+    for name, activation_map in activations.items():
+        assert activation_map.shape[0] == 1, 'One image at a time to visualize.'
+        print('Displaying activation map [{}]'.format(name))
         shape = activation_map.shape
         if len(shape) == 4:
             activations = np.hstack(np.transpose(activation_map[0], (2, 0, 1)))
@@ -68,6 +74,6 @@ def display_activations(activations):
                 activations = np.expand_dims(activations, axis=0)
         else:
             raise Exception('len(shape) = 3 has not been implemented.')
-        plt.title(layer_names[i])
+        plt.title(name)
         plt.imshow(activations, interpolation='None', cmap='jet')
         plt.show()
