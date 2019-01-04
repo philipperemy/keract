@@ -4,6 +4,11 @@ pip install keract
 ```
 *You have just found a (easy) way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
 
+* [API](#api)
+   * [Inputs](#inputs)
+   * [Output](#output)
+* [Examples](#examples)
+
 <p align="center">
   <img src="assets/1.png">
 </p>
@@ -18,12 +23,11 @@ from keract import get_activations
 get_activations(model, x)
 ```
 
-#### Inputs
+Inputs are:
 - `model` is a `keras.models.Model` object.
 - `x` is a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the Keras convention (as used in predict, fit...).
 
-#### Output
-- A dictionary containing the activations for each layer of `model` for the input `x`:
+The output is a dictionary containing the activations for each layer of `model` for the input x:
 
 ```
 {
