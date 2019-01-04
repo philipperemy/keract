@@ -10,7 +10,8 @@ from keras.models import Sequential
 
 import utils
 from data import get_mnist_data, num_classes, input_shape
-from keract import get_activations, display_activations, get_gradients_of_trainable_weights, get_gradients_of_activations
+from keract import get_activations, display_activations, get_gradients_of_trainable_weights, \
+    get_gradients_of_activations
 
 # What this script does:
 # - define the model
@@ -79,7 +80,6 @@ if __name__ == '__main__':
                       optimizer=keras.optimizers.Adadelta(),
                       metrics=['accuracy'])
 
-        # Change starts here
         import shutil
         import os
 
@@ -100,8 +100,6 @@ if __name__ == '__main__':
                   verbose=1,
                   validation_data=(x_test, y_test),
                   callbacks=[checkpoint])
-
-        # Change finishes here
 
         score = model.evaluate(x_test, y_test, verbose=0)
         print('Test loss:', score[0])
