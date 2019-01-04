@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import os
 from glob import glob
 
 import keras
@@ -8,9 +9,9 @@ from keras.layers import Conv2D, MaxPooling2D
 from keras.layers import Dense, Dropout, Flatten
 from keras.models import Sequential
 
+import keract
 import utils
 from data import get_mnist_data, num_classes, input_shape
-import keract
 
 # What this script does:
 # - define the model
@@ -21,8 +22,9 @@ import keract
 # - read the activations
 
 if __name__ == '__main__':
+    checkpoint_dir = 'checkpoints'
 
-    checkpoints = glob('examples/checkpoints/*.h5')
+    checkpoints = glob(os.path.join('examples', checkpoint_dir, '*.h5'))
     # pip3 install natsort
     from natsort import natsorted
 
@@ -80,18 +82,14 @@ if __name__ == '__main__':
                       metrics=['accuracy'])
 
         import shutil
-        import os
 
         # delete folder and its content and creates a new one.
-        try:
-            shutil.rmtree('checkpoints')
-        except:
-            pass
-        os.mkdir('checkpoints')
+        if os.path.exists(checkpoint_dir):
+            shutil.rmtree(checkpoint_dir)
+        os.makedirs(checkpoint_dir)
 
-        checkpoint = ModelCheckpoint(monitor='val_acc',
-                                     filepath='checkpoints/model_{epoch:02d}_{val_acc:.3f}.h5',
-                                     save_best_only=True)
+        checkpoint = ModelCheckpoint(monitor='val_acc', save_best_only=True,
+                                     filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_acc:.3f}.h5'))
 
         model.fit(x_train, y_train,
                   batch_size=128,
