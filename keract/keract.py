@@ -31,36 +31,32 @@ def get_gradients_of_activations(model, model_inputs, outputs, layer_name=None):
 
 
 def get_activations(model, model_inputs, layer_name=None):
-    inp = model.input
+    outputs = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
 
-    model_multi_inputs_cond = True
-    if not isinstance(inp, list):
-        # only one input! let's wrap it in a list.
-        inp = [inp]
-        model_multi_inputs_cond = False
+    # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
+    input_layer_outputs = []
+    layer_outputs = []
+    for output in outputs:
+        if 'input_' in output.name:
+            input_layer_outputs.append(output)
+        else:
+            layer_outputs.append(output)
 
-    outputs = [layer.output for layer in model.layers if
-               layer.name == layer_name or layer_name is None]  # all layer outputs
+    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    f = K.function(symb_inputs, layer_outputs)
+    x, y, sample_weight = model._standardize_user_data(x=model_inputs, y=None)
+    activations = f(x + y + sample_weight)
 
-    # we remove the placeholders (Inputs node in Keras). Not the most elegant though..
-    outputs = [output for output in outputs if 'input_' not in output.name]
-
-    funcs = [K.function(inp + [K.learning_phase()], [out]) for out in outputs]  # evaluation functions
-
-    if model_multi_inputs_cond:
-        list_inputs = []
-        list_inputs.extend(model_inputs)
-        list_inputs.append(0.)
-    else:
-        list_inputs = [model_inputs, 0.]
-
-    # Learning phase. 0 = Test mode (no dropout or batch normalization)
-    # layer_outputs = [func([model_inputs, 0.])[0] for func in funcs]
-    activations = [func(list_inputs)[0] for func in funcs]
-    names = [output.name for output in outputs]
-
+    names = [output.name for output in layer_outputs]
     result = dict(zip(names, activations))
-    return result
+
+    # add back the input layers.
+    input_names = [output.name for output in input_layer_outputs]
+    input_result = dict(zip(input_names, model_inputs))
+
+    z = input_result.copy()
+    z.update(result)
+    return z
 
 
 def display_activations(activations):
