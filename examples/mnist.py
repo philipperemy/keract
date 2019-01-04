@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     if len(checkpoints) > 0:
 
-        checkpoints = sorted(checkpoints)  # pip install natsort would be better suited.
+        checkpoints = sorted(checkpoints)  # pip install natsort: natsorted() would be a better choice..
         assert len(checkpoints) != 0, 'No checkpoints found.'
         checkpoint_file = checkpoints[-1]
         print('Loading [{}]'.format(checkpoint_file))
