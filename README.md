@@ -50,7 +50,7 @@ get_gradients_of_trainable_weights(model, x, y)
 
 The output is a dictionary mapping each trainable weight to the values of its gradients (regarding x and y).
 
-### Get gradients of get_gradients_of_activations
+### Get gradients of activations
 
 - `model` is a `keras.models.Model` object.
 - `x` Input data (numpy array). Keras convention.
