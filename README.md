@@ -12,7 +12,7 @@ pip install keract
 
 - [get_activations](#get-activations-outputs-of-each-layer)
 - [get_gradients_of_trainable_weights](#get-gradients-of-weights)
-- [get_gradients_of_activations](#get-gradients-of-get_gradients_of_activations)
+- [get_gradients_of_activations](#get-gradients-of-activations)
 
 ### Get activations (outputs of each layer)
 
