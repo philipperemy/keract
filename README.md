@@ -1,4 +1,7 @@
 # Keract: Keras Activations + Gradients
+
+[![Downloads](https://pepy.tech/badge/keract)](https://pepy.tech/project/keract)
+[![Downloads](https://pepy.tech/badge/keract/month)](https://pepy.tech/project/keract)
 ```bash
 pip install keract
 ```
