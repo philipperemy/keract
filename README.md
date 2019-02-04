@@ -8,7 +8,7 @@ pip install keract
 *You have just found a (easy) way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
 
 <p align="center">
-  <img src="assets/1.png">
+  <img src="assets/intro.png">
 </p>
 
 ## API
@@ -101,28 +101,17 @@ dense_2/Softmax:0
 (128, 10)
 ```
 
-We can even visualise some of them.
+We can also visualise the activations. Here's another example using VGG16:
 
 <p align="center">
-  <img src="assets/0.png" width="50">
-  <br><i>A random seven from MNIST</i>
+  <img src="assets/cat.jpg">
+  <br><i>A cat.</i>
 </p>
 
 
 <p align="center">
-  <img src="assets/1.png">
-  <br><i>Activation map of CONV1 of LeNet</i>
-</p>
-
-<p align="center">
-  <img src="assets/2.png" width="200">
-  <br><i>Activation map of FC1 of LeNet</i>
-</p>
-
-
-<p align="center">
-  <img src="assets/3.png" width="300">
-  <br><i>Activation map of Softmax of LeNet. <b>Yes it's a seven!</b></i>
+  <img src="assets/cat_activations.png" width="600">
+  <br><i>Outputs of the first conv of VGG16.</i>
 </p>
 
 ### Repo views (since 2018/10/31)
