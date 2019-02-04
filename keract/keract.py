@@ -44,36 +44,24 @@ def get_activations(model, x, layer_name=None):
 
 
 def display_activations(activations):
-    import numpy as np
     import matplotlib.pyplot as plt
-    """
-    (1, 26, 26, 32)
-    (1, 24, 24, 64)
-    (1, 12, 12, 64)
-    (1, 12, 12, 64)
-    (1, 9216)
-    (1, 128)
-    (1, 128)
-    (1, 10)
-    """
-    for name, activation_map in activations.items():
-        assert activation_map.shape[0] == 1, 'One image at a time to visualize.'
-        print('Displaying activation map [{}]'.format(name))
-        shape = activation_map.shape
-        if len(shape) == 4:
-            activations = np.hstack(np.transpose(activation_map[0], (2, 0, 1)))
-        elif len(shape) == 2:
-            # try to make it square as much as possible. we can skip some activations.
-            activations = activation_map[0]
-            num_activations = len(activations)
-            if num_activations > 1024:  # too hard to display it on the screen.
-                square_param = int(np.floor(np.sqrt(num_activations)))
-                activations = activations[0: square_param * square_param]
-                activations = np.reshape(activations, (square_param, square_param))
-            else:
-                activations = np.expand_dims(activations, axis=0)
-        else:
-            raise Exception('len(shape) = 3 has not been implemented.')
-        plt.title(name)
-        plt.imshow(activations, interpolation='None', cmap='jet')
+    max_rows = 8
+    max_columns = 8
+    for layer_name, first in activations.items():
+        print(layer_name, first.shape, end=' ')
+        if first.shape[0] != 1:
+            print('-> Skipped. First dimension is not 1.')
+            continue
+        if len(first.shape) <= 2:
+            print('-> Skipped. 2D Activations.')
+            continue
+        print('')
+        fig = plt.figure(figsize=(12, 12))
+        plt.axis('off')
+        plt.title(layer_name)
+        for i in range(1, min(max_columns * max_rows + 1, first.shape[-1] + 1)):
+            img = first[0, :, :, i - 1]
+            fig.add_subplot(max_rows, max_columns, i)
+            plt.imshow(img)
+            plt.axis('off')
         plt.show()
