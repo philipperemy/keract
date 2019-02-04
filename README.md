@@ -98,7 +98,7 @@ dense_2/Softmax:0
 (128, 10)
 ```
 
-We can also visualise the activations. Here's another example:
+We can also visualise the activations. Here's another example using VGG16:
 
 <p align="center">
   <img src="assets/cat.jpg">
