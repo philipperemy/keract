@@ -5,7 +5,7 @@ pip install keract
 *You have just found a (easy) way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
 
 <p align="center">
-  <img src="assets/cat_activations.png" width="200">
+  <img src="assets/intro.png" width="500">
 </p>
 
 ## API
