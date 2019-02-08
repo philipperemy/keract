@@ -111,7 +111,7 @@ We can also visualise the activations. Here's another example using VGG16:
 
 <p align="center">
   <img src="assets/cat_activations.png" width="600">
-  <br><i>Outputs of the first conv of VGG16.</i>
+  <br><i>Outputs of the first convolutional layer of VGG16.</i>
 </p>
 
 ### Repo views (since 2018/10/31)
