@@ -43,7 +43,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations):
+def display_activations(activations,save=False):
     import matplotlib.pyplot as plt
     max_rows = 8
     max_columns = 8
@@ -64,4 +64,32 @@ def display_activations(activations):
             fig.add_subplot(max_rows, max_columns, i)
             plt.imshow(img)
             plt.axis('off')
-        plt.show()
+        if save:
+            plt.savefig(layer_name.split("/")[0]+".png", bbox_inches="tight")
+        else:
+            plt.show()
+        
+def display_activation(activations,name,save=False):
+    import matplotlib.pyplot as plt
+    max_rows = 8
+    max_columns = 8
+    for layer_name, first in activations.items():
+        if layer_name.startswith(name):
+            if first.shape[0] != 1:
+                print('-> Skipped. First dimension is not 1.')
+                continue
+            if len(first.shape) <= 2:
+                print('-> Skipped. 2D Activations.')
+                continue
+            fig = plt.figure(figsize=(12, 12))
+            plt.axis('off')
+            plt.title(layer_name)
+            for i in range(1, min(max_columns * max_rows + 1, first.shape[-1] + 1)):
+                img = first[0, :, :, i - 1]
+                fig.add_subplot(max_rows, max_columns, i)
+                plt.imshow(img)
+                plt.axis('off')
+            if save:
+                plt.savefig(layer_name.split("/")[0]+".png", bbox_inches="tight")
+            else:
+                plt.show()
