@@ -3,7 +3,10 @@ from keras.models import Model
 
 
 def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
-    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    if hasattr(model, '_feed_targets'):
+        symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    else:
+        symb_inputs = (model._feed_inputs)
     f = K.function(symb_inputs, nodes_to_evaluate)
     x_, y_, sample_weight_ = model._standardize_user_data(x, y)
     return f(x_ + y_ + sample_weight_)
