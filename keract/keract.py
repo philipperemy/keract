@@ -58,7 +58,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations):
+def display_activations(activations,save=False):
     import matplotlib.pyplot as plt
     max_rows = 8
     max_columns = 8
@@ -79,4 +79,7 @@ def display_activations(activations):
             fig.add_subplot(max_rows, max_columns, i)
             plt.imshow(img)
             plt.axis('off')
-        plt.show()
+        if save:
+            plt.savefig(layer_name.split("/")[0]+".png",bbox_inches="tight")
+        else:
+            plt.show()
