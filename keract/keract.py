@@ -115,8 +115,9 @@ def display_heatmaps(activations,image,save=False):
             #displays the image
             plt.imshow(image)
             #overlays a 70% tranparent heatmap onto the image
-            #Lowest actiavtons are yellow, highest are dark red
-            plt.imshow(img,alpha=0.3,cmap="YlOrRd",interpolation="bilinear")
+            #Lowest actiavtons are yellow, highest are (very) dark red
+            #_r for reverse
+            plt.imshow(img,alpha=0.3,cmap="hot_r",interpolation="bilinear")
             plt.axis('off')
         if save:
             plt.savefig(layer_name.split("/")[0]+".png",bbox_inches="tight")
