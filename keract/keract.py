@@ -102,23 +102,25 @@ def display_heatmaps(activations,image,save=False):
         fig = plt.figure(figsize=(12, 12))
         plt.axis('off')
         plt.title(layer_name)
+        #scales activaions (which will form our heat map) to be in range 0-1
+        scaler = MinMaxScaler()
+        scaler.fit(first.reshape(-1,1))
         for i in range(1, min(max_columns * max_rows + 1, first.shape[-1] + 1)):
             img = first[0, :, :, i - 1]
-            #scales activaions (which will form our heat map) to be in range 0-1
-            scaler = MinMaxScaler()
-            img=scaler.fit_transform(img)
+            img=scaler.transform(img)
             #resizes heatmap to be same dimesions of image
             img=Image.fromarray(img)
             img=img.resize((image.shape[0],image.shape[1]),Image.BILINEAR)
             img=np.array(img)
+            
             fig.add_subplot(max_rows, max_columns, i)
             #displays the image
             plt.imshow(image)
             #overlays a 70% tranparent heatmap onto the image
-            #Lowest actiavtons are yellow, highest are (very) dark red
-            #_r for reverse
+            #Lowest actiavtons are yellow, highest are red
             plt.imshow(img,alpha=0.3,cmap="hot_r",interpolation="bilinear")
             plt.axis('off')
+            
         if save:
             plt.savefig(layer_name.split("/")[0]+".png",bbox_inches="tight")
         else:
