@@ -58,7 +58,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations):
+def display_activations(activations,save=False):
     import matplotlib.pyplot as plt
     max_rows = 8
     max_columns = 8
@@ -79,4 +79,48 @@ def display_activations(activations):
             fig.add_subplot(max_rows, max_columns, i)
             plt.imshow(img)
             plt.axis('off')
-        plt.show()
+        if save:
+            plt.savefig(layer_name.split("/")[0]+".png",bbox_inches="tight")
+        else:
+            plt.show()
+def display_heatmaps(activations,image,save=False):
+    from PIL import Image
+    import matplotlib.pyplot as plt
+    from sklearn.preprocessing import MinMaxScaler
+    import numpy as np
+    max_rows = 8
+    max_columns = 8
+    for layer_name, first in activations.items():
+        print(layer_name, first.shape, end=' ')
+        if first.shape[0] != 1:
+            print('-> Skipped. First dimension is not 1.')
+            continue
+        if len(first.shape) <= 2:
+            print('-> Skipped. 2D Activations.')
+            continue
+        print('')
+        fig = plt.figure(figsize=(12, 12))
+        plt.axis('off')
+        plt.title(layer_name)
+        #computes values rquired to scale the activaions (which will form our heat map) to be in range 0-1
+        scaler = MinMaxScaler()
+        scaler.fit(first.reshape(-1,1))
+        for i in range(1, min(max_columns * max_rows + 1, first.shape[-1] + 1)):
+            img = first[0, :, :, i - 1]
+            #scales the activaions (which will form our heat map) to be in range 0-1
+            img=scaler.transform(img)
+            #resizes heatmap to be same dimesions of image
+            img=Image.fromarray(img)
+            img=img.resize((image.shape[0],image.shape[1]),Image.BILINEAR)
+            img=np.array(img)
+            fig.add_subplot(max_rows, max_columns, i)
+            #displays the image
+            plt.imshow(image)
+            #overlays a 70% tranparent heatmap onto the image
+            #Lowest actiavtons are dark, highest are dark red, mid are yellow
+            plt.imshow(img,alpha=0.3,cmap="jet",interpolation="bilinear")
+            plt.axis('off')
+        if save:
+            plt.savefig(layer_name.split("/")[0]+".png",bbox_inches="tight")
+        else:
+            plt.show()
