@@ -101,7 +101,12 @@ dense_2/Softmax:0
 (128, 10)
 ```
 
-We can also visualise the activations. Here's another example using VGG16:
+We can visualise the activations. Here's another example using VGG16:
+
+```
+cd examples
+python vgg16.py
+```
 
 <p align="center">
   <img src="assets/cat.jpg">
@@ -113,6 +118,18 @@ We can also visualise the activations. Here's another example using VGG16:
   <img src="assets/cat_activations.png" width="600">
   <br><i>Outputs of the first convolutional layer of VGG16.</i>
 </p>
+
+Also, we can visualise the heatmaps of the activations:
+
+```
+cd examples
+python heat_map.py
+```
+
+<p align="center">
+  <img src="assets/heatmap.png">
+</p>
+
 
 ### Repo views (since 2018/10/31)
 [![HitCount](http://hits.dwyl.io/philipperemy/keras-activations.svg)](http://hits.dwyl.io/philipperemy/keras-activations)
