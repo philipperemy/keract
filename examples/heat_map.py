@@ -29,4 +29,4 @@ model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 activations = keract.get_activations(model, image)
-keract.display_heatmaps(activations, arr_image, save=True)
+keract.display_heatmaps(activations, arr_image)
