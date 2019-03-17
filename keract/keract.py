@@ -60,8 +60,7 @@ def get_activations(model, x, layer_name=None):
 
 def display_activations(activations, save=False):
     import matplotlib.pyplot as plt
-    max_rows = 8
-    max_columns = 8
+    import math
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -71,14 +70,18 @@ def display_activations(activations, save=False):
             print('-> Skipped. 2D Activations.')
             continue
         print('')
-        fig = plt.figure(figsize=(12, 12))
-        plt.axis('off')
-        plt.title(layer_name)
-        for i in range(1, min(max_columns * max_rows + 1, acts.shape[-1] + 1)):
-            img = acts[0, :, :, i - 1]
-            fig.add_subplot(max_rows, max_columns, i)
-            plt.imshow(img)
-            plt.axis('off')
+        nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
+        ncols = int(math.ceil(acts.shape[-1] / nrows))
+        fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
+        fig.suptitle(layer_name)
+        for i in range(nrows * ncols):
+            if i < acts.shape[-1]:
+                img = acts[0, :, :, i]
+                hmap = axes.flat[i].imshow(img)
+            axes.flat[i].axis('off')
+        fig.subplots_adjust(right=0.8)
+        cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
+        fig.colorbar(hmap, cax=cbar)
         if save:
             plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
@@ -90,8 +93,7 @@ def display_heatmaps(activations, image, save=False):
     import matplotlib.pyplot as plt
     from sklearn.preprocessing import MinMaxScaler
     import numpy as np
-    max_rows = 8
-    max_columns = 8
+    import math
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -101,27 +103,27 @@ def display_heatmaps(activations, image, save=False):
             print('-> Skipped. 2D Activations.')
             continue
         print('')
-        fig = plt.figure(figsize=(12, 12))
-        plt.axis('off')
-        plt.title(layer_name)
+        nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
+        ncols = int(math.ceil(acts.shape[-1] / nrows))
+        fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
+        fig.suptitle(layer_name)
         # computes values required to scale the activations (which will form our heat map) to be in range 0-1
         scaler = MinMaxScaler()
         scaler.fit(acts.reshape(-1, 1))
-        for i in range(1, min(max_columns * max_rows + 1, acts.shape[-1] + 1)):
-            img = acts[0, :, :, i - 1]
-            # scale the activations (which will form our heat map) to be in range 0-1
-            img = scaler.transform(img)
-            # resize heatmap to be same dimensions of image
-            img = Image.fromarray(img)
-            img = img.resize((image.shape[0], image.shape[1]), Image.BILINEAR)
-            img = np.array(img)
-            fig.add_subplot(max_rows, max_columns, i)
-            # display the image
-            plt.imshow(image / 255.0)
-            # overlay a 70% transparent heat map onto the image
-            # Lowest activations are dark, highest are dark red, mid are yellow
-            plt.imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
-            plt.axis('off')
+        for i in range(nrows * ncols):
+            if i < acts.shape[-1]:
+                img = acts[0, :, :, i]
+                # scale the activations (which will form our heat map) to be in range 0-1
+                img = scaler.transform(img)
+                # resize heatmap to be same dimensions of image
+                img = Image.fromarray(img)
+                img = img.resize((image.shape[0], image.shape[1]), Image.BILINEAR)
+                img = np.array(img)
+                axes.flat[i].imshow(img / 255.0)
+                # overlay a 70% transparent heat map onto the image
+                # Lowest activations are dark, highest are dark red, mid are yellow
+                axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
+            axes.flat[i].axis('off')
         if save:
             plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
