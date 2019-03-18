@@ -1,0 +1,5 @@
+tensorflow
+pillow
+requests
+matplotlib
+scikit-learn
