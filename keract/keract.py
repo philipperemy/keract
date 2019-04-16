@@ -201,5 +201,5 @@ def display_gradients_of_trainable_weights(gradients, save=False):
             plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
             plt.show()
-         plt.close(fig)
+        plt.close(fig)
         
