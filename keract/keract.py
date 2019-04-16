@@ -202,4 +202,3 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         else:
             plt.show()
         plt.close(fig)
-        
