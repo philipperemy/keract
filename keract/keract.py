@@ -108,7 +108,7 @@ def display_activations(activations, cmap=None, save=False):
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
                 img = acts[0, :, :, i]
-                hmap = axes.flat[i].imshow(img,cmap=cmap)
+                hmap = axes.flat[i].imshow(img, cmap=cmap)
             axes.flat[i].axis('off')
         fig.subplots_adjust(right=0.8)
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
@@ -117,7 +117,7 @@ def display_activations(activations, cmap=None, save=False):
             plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
             plt.show()
-        #pyplot figures require manual closing
+        # pyplot figures require manual closing
         plt.close(fig)
 
 
@@ -201,5 +201,4 @@ def display_gradients_of_trainable_weights(gradients, save=False):
             plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
             plt.show()
-         plt.close(fig)
-        
+        plt.close(fig)
