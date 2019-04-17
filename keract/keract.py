@@ -121,11 +121,11 @@ def display_activations(activations, cmap=None, save=False):
         plt.close(fig)
 
 
-def display_heatmaps(activations, image, save=False):
+def display_heatmaps(activations, input_image, save=False):
     """
     Plot heatmaps of activations for all filters overlayed on the input image for each layer
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
-    :param image: input image for the overlay
+    :param input_image: input image for the overlay
     :param save: bool- if the plot should be saved
     :return: None
     """
@@ -155,11 +155,11 @@ def display_heatmaps(activations, image, save=False):
                 img = acts[0, :, :, i]
                 # scale the activations (which will form our heat map) to be in range 0-1
                 img = scaler.transform(img)
-                # resize heatmap to be same dimensions of image
+                # resize heatmap to be same dimensions of input_image
                 img = Image.fromarray(img)
-                img = img.resize((image.shape[0], image.shape[1]), Image.BILINEAR)
+                img = img.resize((input_image.shape[0], input_image.shape[1]), Image.BILINEAR)
                 img = np.array(img)
-                axes.flat[i].imshow(img / 255.0)
+                axes.flat[i].imshow(input_image / 255.0)
                 # overlay a 70% transparent heat map onto the image
                 # Lowest activations are dark, highest are dark red, mid are yellow
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
