@@ -105,6 +105,7 @@ We can visualise the activations. Here's another example using VGG16:
 
 ```
 cd examples
+pip install -r visualization-requirements.txt
 python vgg16.py
 ```
 
@@ -123,6 +124,7 @@ Also, we can visualise the heatmaps of the activations:
 
 ```
 cd examples
+pip install -r visualization-requirements.txt
 python heat_map.py
 ```
 
