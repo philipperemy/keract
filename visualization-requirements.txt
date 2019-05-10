@@ -1,0 +1,4 @@
+requests
+matplotlib
+pillow
+sklearn
