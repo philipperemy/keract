@@ -104,8 +104,8 @@ dense_2/Softmax:0
 We can visualise the activations. Here's another example using VGG16:
 
 ```
-cd examples
 pip install -r visualization-requirements.txt
+cd examples
 python vgg16.py
 ```
 
@@ -123,8 +123,8 @@ python vgg16.py
 Also, we can visualise the heatmaps of the activations:
 
 ```
-cd examples
 pip install -r visualization-requirements.txt
+cd examples
 python heat_map.py
 ```
 
