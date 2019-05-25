@@ -103,7 +103,7 @@ def display_activations(activations, cmap=None, save=False):
         print('')
         nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
         ncols = int(math.ceil(acts.shape[-1] / nrows))
-        fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
+        fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(12, 12))
         fig.suptitle(layer_name)
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
