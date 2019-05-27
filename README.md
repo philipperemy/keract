@@ -14,6 +14,8 @@ pip install keract
 ## API
 
 - [get_activations](#get-activations-outputs-of-each-layer)
+- [display_activations](#display-the-activations-youve-obtained)
+- [display_heatmaps](#display-the-activations-as-a-heatmap-overlaid-on-an-image)
 - [get_gradients_of_trainable_weights](#get-gradients-of-weights)
 - [get_gradients_of_activations](#get-gradients-of-activations)
 
@@ -21,12 +23,13 @@ pip install keract
 
 ```python
 from keract import get_activations
-get_activations(model, x)
+activations = get_activations(model, x, layer_name)
 ```
 
 Inputs are:
 - `model` is a `keras.models.Model` object.
 - `x` is a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the Keras convention (as used in predict, fit...).
+- `layer_name` (optional) - the layer to get activations for if you only want the activations for one layer
 
 The output is a dictionary containing the activations for each layer of `model` for the input x:
 
@@ -41,6 +44,29 @@ The output is a dictionary containing the activations for each layer of `model` 
 
 The key is the name of the layer and the value is the corresponding output of the layer for the given input `x`.
 
+### Display the activations you've obtained
+
+```python
+from keract import display_activations
+display_activations(activations, cmap="gray", save=False)
+```
+
+Inputs are:
+- `activations` a dictionary mapping layers to their activations (the output of get_activations)
+- `cmap` (optional) a string of a valid matplotlib colourmap
+- `save`(optional) a bool, if True the images of the activations are saved rather than being shown
+
+### Display the activations as a heatmap overlaid on an image
+
+```python
+from keract import display_heatmaps
+display_heatmaps(activations, input_image, save=False)
+```
+
+Inputs are:
+- `activations` a dictionary mapping layers to their activations (the output of get_activations)
+- `input_image`  a numpy array of the image you inputed to the get_activations
+- `save`(optional) a bool, if True the images of the activations are saved rather than being shown
 ### Get gradients of weights
 - `model` is a `keras.models.Model` object.
 - `x` Input data (numpy array). Keras convention.
