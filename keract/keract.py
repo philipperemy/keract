@@ -84,7 +84,7 @@ def get_activations(model, x, layer_name=None):
 
 def display_activations(activations, cmap=None, save=False):
     """
-    Plot heatmaps of activations for all filters for each layer
+    Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
     :param cmap: string - a valid matplotlib colourmap to be used
     :param save: bool- if the plot should be saved
