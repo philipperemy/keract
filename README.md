@@ -157,8 +157,3 @@ python heat_map.py
 <p align="center">
   <img src="assets/heatmap.png">
 </p>
-
-
-### Repo views (since 2018/10/31)
-[![HitCount](http://hits.dwyl.io/philipperemy/keras-activations.svg)](http://hits.dwyl.io/philipperemy/keras-activations)
-
