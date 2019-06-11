@@ -1,4 +1,4 @@
-Keras
+Keras>=2.2.3
 tensorflow
 numpy
 h5py
