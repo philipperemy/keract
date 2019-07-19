@@ -159,20 +159,24 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
         ncols = int(math.ceil(acts.shape[-1] / nrows))
         fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
         fig.suptitle(layer_name)
+        
         # computes values required to scale the activations (which will form our heat map) to be in range 0-1
         scaler = MinMaxScaler()
+        #reshapes to be 2D with an automaticly calculated first dimension and second dimension of 1 in order to keep scikitlearn happy
         scaler.fit(acts.reshape(-1, 1))
+        
+        #loops over each filter/neuron
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
                 img = acts[0, :, :, i]
-                # scale the activations (which will form our heat map) to be in range 0-1
+                #scales the activation (which will form our heat map) to be in range 0-1 using the previously calculated statistics
                 img = scaler.transform(img)
-                # resize heatmap to be same dimensions of input_image
                 img = Image.fromarray(img)
-                img = img.resize((input_image.shape[0], input_image.shape[1]), Image.BILINEAR)
+                # resizes the activation to be same dimensions of input_image
+                img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
                 img = np.array(img)
                 axes.flat[i].imshow(input_image / 255.0)
-                # overlay a 70% transparent heat map onto the image
+                #overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
                 # Lowest activations are dark, highest are dark red, mid are yellow
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
             axes.flat[i].axis('off')
@@ -214,3 +218,4 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         else:
             plt.show()
         plt.close(fig)
+        
