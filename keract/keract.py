@@ -140,11 +140,11 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
         #fixes common errors made when passing the image
         #I recommend the use of keras' load_img function passed to np.array to ensure images are loaded in in the correct format
         #removes the batch size from the shape
-        if len(input_image.shape())  == 4:
+        if len(input_image.shape)  == 4:
             input_image = input_image[0]
         #removes channels from the shape of grayscale images
-        if len(input_image.shape())==3 and input_image.shape()[2]==1:
-            input_image = input_image.resize(input_image.shape()[0], input_image.shape()[1])
+        if len(input_image.shape)==3 and input_image.shape[2]==1:
+            input_image = input_image.resize(input_image.shape[0], input_image.shape[1])
         
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
