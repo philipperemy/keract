@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='keract',
-    version='2.6.1',
+    version='2.6.2',
     description='Keras Activations and Gradients',
     author='Philippe Remy',
     license='MIT',
