@@ -1,3 +1,6 @@
+import json
+from collections import OrderedDict
+
 import keras.backend as K
 from keras.models import Model
 
@@ -75,8 +78,8 @@ def get_activations(model, x, layer_name=None):
     input_layer_outputs, layer_outputs = [], []
     [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
     activations = _evaluate(model, layer_outputs, x, y=None)
-    activations_dict = dict(zip([output.name for output in layer_outputs], activations))
-    activations_inputs_dict = dict(zip([output.name for output in input_layer_outputs], x))
+    activations_dict = OrderedDict(zip([output.name for output in layer_outputs], activations))
+    activations_inputs_dict = OrderedDict(zip([output.name for output in input_layer_outputs], x))
     result = activations_inputs_dict.copy()
     result.update(activations_dict)
     return result
@@ -87,7 +90,7 @@ def display_activations(activations, cmap=None, save=False):
     Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
     :param cmap: string - a valid matplotlib colourmap to be used
-    :param save: bool- if the plot should be saved
+    :param save: bool - if the plot should be saved
     :return: None
     """
     import matplotlib.pyplot as plt
@@ -127,7 +130,7 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
     :param activations: dict mapping layers to corresponding activations with the shape (1, output height, output width, number of filters)
     :param input_image: numpy array, input image for the overlay
     :param save: bool, if the plot should be saved
-    :param fix: bool, if automated checks and fixes for incorrect images should be ran
+    :param fix: bool, if automated checks and fixes for incorrect images should be run
     :return: None
     """
     from PIL import Image
@@ -135,17 +138,17 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
     from sklearn.preprocessing import MinMaxScaler
     import numpy as np
     import math
-    
+
     if fix:
-        #fixes common errors made when passing the image
-        #I recommend the use of keras' load_img function passed to np.array to ensure images are loaded in in the correct format
-        #removes the batch size from the shape
-        if len(input_image.shape)  == 4:
+        # fixes common errors made when passing the image
+        # I recommend the use of keras' load_img function passed to np.array to ensure images are loaded in in the correct format
+        # removes the batch size from the shape
+        if len(input_image.shape) == 4:
             input_image = input_image.reshape(input_image.shape[1], input_image.shape[2], input_image.shape[3])
-        #removes channels from the shape of grayscale images
-        if len(input_image.shape)==3 and input_image.shape[2]==1:
+        # removes channels from the shape of grayscale images
+        if len(input_image.shape) == 3 and input_image.shape[2] == 1:
             input_image = input_image.reshape(input_image.shape[0], input_image.shape[1])
-        
+
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -159,24 +162,24 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
         ncols = int(math.ceil(acts.shape[-1] / nrows))
         fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
         fig.suptitle(layer_name)
-        
+
         # computes values required to scale the activations (which will form our heat map) to be in range 0-1
         scaler = MinMaxScaler()
-        #reshapes to be 2D with an automaticly calculated first dimension and second dimension of 1 in order to keep scikitlearn happy
+        # reshapes to be 2D with an automaticly calculated first dimension and second dimension of 1 in order to keep scikitlearn happy
         scaler.fit(acts.reshape(-1, 1))
-        
-        #loops over each filter/neuron
+
+        # loops over each filter/neuron
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
                 img = acts[0, :, :, i]
-                #scales the activation (which will form our heat map) to be in range 0-1 using the previously calculated statistics
+                # scales the activation (which will form our heat map) to be in range 0-1 using the previously calculated statistics
                 img = scaler.transform(img)
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
                 img = np.array(img)
                 axes.flat[i].imshow(input_image / 255.0)
-                #overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
+                # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
                 # Lowest activations are dark, highest are dark red, mid are yellow
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
             axes.flat[i].axis('off')
@@ -218,4 +221,27 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         else:
             plt.show()
         plt.close(fig)
-        
+
+
+def persist_to_json_file(activations, filename):
+    """
+    Persist the activations to the disk
+    :param activations: activations (dict mapping layers)
+    :param filename: output filename (JSON format)
+    :return: None
+    """
+    with open(filename, 'w') as w:
+        json.dump(fp=w, obj=OrderedDict({k: v.tolist() for k, v in activations.items()}), indent=2, sort_keys=False)
+
+
+def load_activations_from_json_file(filename):
+    """
+    Read the activations from the disk
+    :param filename: filename to read the activations from (JSON format)
+    :return: activations (dict mapping layers)
+    """
+    import numpy as np
+    with open(filename, 'r') as r:
+        d = json.load(r, object_pairs_hook=OrderedDict)
+        activations = OrderedDict({k: np.array(v) for k, v in d.items()})
+        return activations
