@@ -69,7 +69,7 @@ Inputs are:
 - `save`(optional) a bool, if True the images of the activations are saved rather than being shown
 ### Get gradients of weights
 - `model` is a `keras.models.Model` object.
-- `x` Input data (numpy array). Keras convention.
+- `x`: Input data (numpy array). Keras convention.
 - `y`: Labels (numpy array). Keras convention.
 
 ```python
@@ -82,7 +82,7 @@ The output is a dictionary mapping each trainable weight to the values of its gr
 ### Get gradients of activations
 
 - `model` is a `keras.models.Model` object.
-- `x` Input data (numpy array). Keras convention.
+- `x`: Input data (numpy array). Keras convention.
 - `y`: Labels (numpy array). Keras convention.
 
 ```python
@@ -91,6 +91,27 @@ get_gradients_of_activations(model, x, y)
 ```
 
 The output is a dictionary mapping each layer to the values of its gradients (regarding x and y).
+
+### Persist activations to JSON
+
+- `activations`: activations (dict mapping layers)
+- `filename`: output filename (JSON format)
+
+```python
+from keract import persist_to_json_file
+persist_to_json_file(activations, filename)
+```
+
+### Load activations from JSON
+
+- `filename`: filename to read the activations from (JSON format)
+
+```python
+from keract import persist_to_json_file
+load_activations_from_json_file(filename)
+```
+
+It returns the activations.
 
 ## Examples
 
