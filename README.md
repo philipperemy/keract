@@ -18,6 +18,8 @@ pip install keract
 - [display_heatmaps](#display-the-activations-as-a-heatmap-overlaid-on-an-image)
 - [get_gradients_of_trainable_weights](#get-gradients-of-weights)
 - [get_gradients_of_activations](#get-gradients-of-activations)
+- [persist_to_json_file](#persist-activations-to-json)
+- [load_activations_from_json_file](#load-activations-from-json)
 
 ### Get activations (outputs of each layer)
 
