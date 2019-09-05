@@ -1,6 +1,6 @@
 import json
 from collections import OrderedDict
-
+import os
 import keras.backend as K
 from keras.models import Model
 
@@ -29,7 +29,7 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
 
 def get_gradients_of_trainable_weights(model, x, y):
     """
-    Get the gradients of trainable_weights for the kernel and the bias nodes for all filters in each layer. 
+    Get the gradients of trainable_weights for the kernel and the bias nodes for all filters in each layer.
     Trainable_weights gradients are averaged over the minibatch.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']
     :param x: inputs for which gradients are sought (averaged over all inputs if batch_size > 1)
@@ -43,10 +43,10 @@ def get_gradients_of_trainable_weights(model, x, y):
 
 def get_gradients_of_activations(model, x, y, layer_name=None):
     """
-    Get gradients of the outputs of the activation functions, regarding the loss. 
+    Get gradients of the outputs of the activation functions, regarding the loss.
     Intuitively, it shows how your activation maps change over a tiny modification of the loss.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']
-    :param x: inputs for which gradients are sought 
+    :param x: inputs for which gradients are sought
     :param y: outputs for which gradients are sought
     :param layer_name: if gradients of a particular layer are sought
     :return: dict mapping layers to corresponding gradients of activations (batch_size, output_h, output_w, num_filters)
@@ -85,7 +85,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations, cmap=None, save=False):
+def display_activations(activations, cmap=None, save=False, dim=2, dir=''):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
@@ -110,14 +110,20 @@ def display_activations(activations, cmap=None, save=False):
         fig.suptitle(layer_name)
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
-                img = acts[0, :, :, i]
-                hmap = axes.flat[i].imshow(img, cmap=cmap)
+                if dim==1:
+                    img = acts[0, :, i]
+                    hmap = axes.flat[i].imshow([img], cmap=cmap)
+                elif dim==2:
+                    img = acts[0, :, :, i]
+                    hmap = axes.flat[i].imshow(img, cmap=cmap)
             axes.flat[i].axis('off')
         fig.subplots_adjust(right=0.8)
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            if not os.path.exists(dir):
+                os.makedirs(dir)
+            plt.savefig(dir+layer_name.split('/')[0] + '.png', bbox_inches='tight')
         else:
             plt.show()
         # pyplot figures require manual closing
