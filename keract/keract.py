@@ -85,7 +85,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations, cmap=None, save=False, dim=2, dir=''):
+def display_activations(activations, cmap=None, save=False, dir=''):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
@@ -100,9 +100,11 @@ def display_activations(activations, cmap=None, save=False, dim=2, dir=''):
         if acts.shape[0] != 1:
             print('-> Skipped. First dimension is not 1.')
             continue
+        """
         if len(acts.shape) <= 2:
             print('-> Skipped. 2D Activations.')
             continue
+        """
         print('')
         nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
         ncols = int(math.ceil(acts.shape[-1] / nrows))
@@ -110,10 +112,13 @@ def display_activations(activations, cmap=None, save=False, dim=2, dir=''):
         fig.suptitle(layer_name)
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
-                if dim==1:
+                if len(acts.shape)==2:
+                    img = acts[0, i]
+                    hmap = axes.flat[i].imshow([[img]], cmap=cmap)
+                elif len(acts.shape)==3:
                     img = acts[0, :, i]
                     hmap = axes.flat[i].imshow([img], cmap=cmap)
-                elif dim==2:
+                elif len(acts.shape)==4:
                     img = acts[0, :, :, i]
                     hmap = axes.flat[i].imshow(img, cmap=cmap)
             axes.flat[i].axis('off')
