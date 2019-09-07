@@ -124,7 +124,7 @@ def display_activations(activations, cmap=None, save=False, dir='',data_format='
             axes.flat[0].axis('off')
         else:
             for i in range(nrows * ncols):
-                if i < acts.shape[-1]:
+                if i < acts.shape[c]:
                     if len(acts.shape)==3:
                         if data_format == 'channels_last':
                             img = acts[0, :, i]
