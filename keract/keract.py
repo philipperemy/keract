@@ -95,6 +95,7 @@ def display_activations(activations, cmap=None, save=False):
     """
     import matplotlib.pyplot as plt
     import math
+    index = 0
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -117,10 +118,11 @@ def display_activations(activations, cmap=None, save=False):
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig(f'{index}_{layer_name.split('/')[0]}.png', bbox_inches='tight')
         else:
             plt.show()
         # pyplot figures require manual closing
+        index += 1
         plt.close(fig)
 
 
@@ -149,6 +151,7 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
         if len(input_image.shape) == 3 and input_image.shape[2] == 1:
             input_image = input_image.reshape(input_image.shape[0], input_image.shape[1])
 
+    index = 0
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -184,11 +187,11 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
             axes.flat[i].axis('off')
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig(f'{index}_{layer_name.split('/')[0]}.png', bbox_inches='tight')
         else:
             plt.show()
+        index += 1
         plt.close(fig)
-
 
 def display_gradients_of_trainable_weights(gradients, save=False):
     """
@@ -198,6 +201,8 @@ def display_gradients_of_trainable_weights(gradients, save=False):
     :return: None
     """
     import matplotlib.pyplot as plt
+
+    index = 0
     for layer_name, grads in gradients.items():
         if len(grads.shape) != 4:
             print(layer_name, ": Expected dimensions (filter_h, filter_w, in_channels, out_channels). Got ",
@@ -217,9 +222,10 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig(f'{index}_{layer_name.split('/')[0]}.png', bbox_inches='tight')
         else:
             plt.show()
+        index += 1
         plt.close(fig)
 
 
