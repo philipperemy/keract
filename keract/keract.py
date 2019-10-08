@@ -31,7 +31,8 @@ def get_gradients_of_trainable_weights(model, x, y):
     """
     Get the gradients of trainable_weights for the kernel and the bias nodes for all filters in each layer. 
     Trainable_weights gradients are averaged over the minibatch.
-    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']
+    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2']
     :param x: inputs for which gradients are sought (averaged over all inputs if batch_size > 1)
     :param y: outputs for which gradients are sought
     :return: dict mapping layers to corresponding gradients (filter_h, filter_w, in_channels, out_channels)
@@ -45,7 +46,8 @@ def get_gradients_of_activations(model, x, y, layer_name=None):
     """
     Get gradients of the outputs of the activation functions, regarding the loss. 
     Intuitively, it shows how your activation maps change over a tiny modification of the loss.
-    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']
+    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2']
     :param x: inputs for which gradients are sought 
     :param y: outputs for which gradients are sought
     :param layer_name: if gradients of a particular layer are sought
@@ -68,7 +70,8 @@ def _get_gradients(model, x, y, nodes, nodes_names):
 def get_activations(model, x, layer_name=None):
     """
     Get output activations for all filters for each layer
-    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']
+    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2']
     :param x: input for which activations are sought (can be a batch input)
     :param layer_name: if activations of a particular layer are sought
     :return: dict mapping layers to corresponding activations (batch_size, output_h, output_w, num_filters)
@@ -95,6 +98,7 @@ def display_activations(activations, cmap=None, save=False):
     """
     import matplotlib.pyplot as plt
     import math
+    index = 0
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -117,17 +121,19 @@ def display_activations(activations, cmap=None, save=False):
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig('{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
         else:
             plt.show()
         # pyplot figures require manual closing
+        index += 1
         plt.close(fig)
 
 
 def display_heatmaps(activations, input_image, save=False, fix=True):
     """
     Plot heatmaps of activations for all filters overlayed on the input image for each layer
-    :param activations: dict mapping layers to corresponding activations with the shape (1, output height, output width, number of filters)
+    :param activations: dict mapping layers to corresponding activations with the shape
+    (1, output height, output width, number of filters)
     :param input_image: numpy array, input image for the overlay
     :param save: bool, if the plot should be saved
     :param fix: bool, if automated checks and fixes for incorrect images should be run
@@ -141,7 +147,8 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
 
     if fix:
         # fixes common errors made when passing the image
-        # I recommend the use of keras' load_img function passed to np.array to ensure images are loaded in in the correct format
+        # I recommend the use of keras' load_img function passed to np.array to ensure
+        # images are loaded in in the correct format
         # removes the batch size from the shape
         if len(input_image.shape) == 4:
             input_image = input_image.reshape(input_image.shape[1], input_image.shape[2], input_image.shape[3])
@@ -149,6 +156,7 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
         if len(input_image.shape) == 3 and input_image.shape[2] == 1:
             input_image = input_image.reshape(input_image.shape[0], input_image.shape[1])
 
+    index = 0
     for layer_name, acts in activations.items():
         print(layer_name, acts.shape, end=' ')
         if acts.shape[0] != 1:
@@ -165,14 +173,16 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
 
         # computes values required to scale the activations (which will form our heat map) to be in range 0-1
         scaler = MinMaxScaler()
-        # reshapes to be 2D with an automaticly calculated first dimension and second dimension of 1 in order to keep scikitlearn happy
+        # reshapes to be 2D with an automaticly calculated first dimension and second
+        # dimension of 1 in order to keep scikitlearn happy
         scaler.fit(acts.reshape(-1, 1))
 
         # loops over each filter/neuron
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
                 img = acts[0, :, :, i]
-                # scales the activation (which will form our heat map) to be in range 0-1 using the previously calculated statistics
+                # scales the activation (which will form our heat map) to be in range 0-1 using
+                # the previously calculated statistics
                 img = scaler.transform(img)
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
@@ -184,9 +194,10 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
             axes.flat[i].axis('off')
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig(f'{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
         else:
             plt.show()
+        index += 1
         plt.close(fig)
 
 
@@ -198,6 +209,8 @@ def display_gradients_of_trainable_weights(gradients, save=False):
     :return: None
     """
     import matplotlib.pyplot as plt
+
+    index = 0
     for layer_name, grads in gradients.items():
         if len(grads.shape) != 4:
             print(layer_name, ": Expected dimensions (filter_h, filter_w, in_channels, out_channels). Got ",
@@ -217,9 +230,10 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(layer_name.split('/')[0] + '.png', bbox_inches='tight')
+            plt.savefig(f'{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
         else:
             plt.show()
+        index += 1
         plt.close(fig)
 
 

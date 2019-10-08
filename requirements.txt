@@ -1,5 +1,5 @@
+tensorflow==1.13.2
 Keras>=2.2.3
-tensorflow
-numpy
+numpy==1.16.2
 h5py
 matplotlib

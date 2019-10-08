@@ -11,7 +11,7 @@ from keras.models import Sequential
 
 import keract
 import utils
-from data import get_mnist_data, num_classes, input_shape
+from data import MNIST
 
 # What this script does:
 # - define the model
@@ -42,7 +42,7 @@ if __name__ == '__main__':
 
         print(model.summary())
 
-        x_train, y_train, x_test, y_test = get_mnist_data()
+        x_train, y_train, x_test, y_test = MNIST.get_mnist_data()
 
         # checking that the accuracy is the same as before 99% at the first epoch.
         # test_loss, test_acc = model.evaluate(x_test, y_test, verbose=0, batch_size=128)
@@ -60,19 +60,19 @@ if __name__ == '__main__':
         # import matplotlib.pyplot as plt
         # plt.imshow(np.squeeze(x_test[0:1]), interpolation='None', cmap='gray')
     else:
-        x_train, y_train, x_test, y_test = get_mnist_data()
+        x_train, y_train, x_test, y_test = MNIST.get_mnist_data()
 
         model = Sequential()
         model.add(Conv2D(32, kernel_size=(3, 3),
                          activation='relu',
-                         input_shape=input_shape))
+                         input_shape=MNIST.input_shape))
         model.add(Conv2D(64, (3, 3), activation='relu'))
         model.add(MaxPooling2D(pool_size=(2, 2)))
         model.add(Dropout(0.25))
         model.add(Flatten())
         model.add(Dense(128, activation='relu'))
         model.add(Dropout(0.5))
-        model.add(Dense(num_classes, activation='softmax'))
+        model.add(Dense(MNIST.num_classes, activation='softmax'))
 
         model.compile(loss=keras.losses.categorical_crossentropy,
                       optimizer=keras.optimizers.Adadelta(),
@@ -85,8 +85,8 @@ if __name__ == '__main__':
             shutil.rmtree(checkpoint_dir)
         os.makedirs(checkpoint_dir)
 
-        checkpoint = ModelCheckpoint(monitor='val_acc', save_best_only=True,
-                                     filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_acc:.3f}.h5'))
+        checkpoint = ModelCheckpoint(monitor='val_accuracy', save_best_only=True,
+                                     filepath=os.path.join(checkpoint_dir, 'model_{epoch:02d}_{val_accuracy:.3f}.h5'))
 
         model.fit(x_train, y_train,
                   batch_size=128,
