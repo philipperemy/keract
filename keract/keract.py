@@ -112,10 +112,12 @@ def display_activations(activations, cmap=None, save=False, directory='', data_f
             c = -1
         elif data_format == 'channels_first':
             c = 1
+        else:
+            raise Exception('Unknown data_format.')
+
         nrows = int(math.sqrt(acts.shape[c]) - 0.001) + 1  # best square fit for the given number
         ncols = int(math.ceil(acts.shape[c] / nrows))
-        fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(24, 24))
-        fig.suptitle(layer_name)
+        hmap = None
         if len(acts.shape) <= 2:
             """
             print('-> Skipped. 2D Activations.')
@@ -123,11 +125,11 @@ def display_activations(activations, cmap=None, save=False, directory='', data_f
             """
             # no channel
             fig, axes = plt.subplots(1, 1, squeeze=False, figsize=(24, 24))
-            fig.suptitle(layer_name)
             img = acts[0, :]
             hmap = axes.flat[0].imshow([img], cmap=cmap)
             axes.flat[0].axis('off')
         else:
+            fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(24, 24))
             for i in range(nrows * ncols):
                 if i < acts.shape[c]:
                     if len(acts.shape) == 3:
@@ -135,14 +137,19 @@ def display_activations(activations, cmap=None, save=False, directory='', data_f
                             img = acts[0, :, i]
                         elif data_format == 'channels_first':
                             img = acts[0, i, :]
+                        else:
+                            raise Exception('Unknown data_format.')
                         hmap = axes.flat[i].imshow([img], cmap=cmap)
                     elif len(acts.shape) == 4:
                         if data_format == 'channels_last':
                             img = acts[0, :, :, i]
                         elif data_format == 'channels_first':
                             img = acts[0, i, :, :]
+                        else:
+                            raise Exception('Unknown data_format.')
                         hmap = axes.flat[i].imshow(img, cmap=cmap)
                 axes.flat[i].axis('off')
+        fig.suptitle(layer_name)
         fig.subplots_adjust(right=0.8)
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
@@ -253,6 +260,7 @@ def display_gradients_of_trainable_weights(gradients, directory='', save=False):
         ncols = grads.shape[-2]
         fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
         fig.suptitle(layer_name)
+        hmap = None
         for i in range(nrows):
             for j in range(ncols):
                 g = grads[:, :, j, i]
