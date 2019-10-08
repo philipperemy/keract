@@ -5,10 +5,10 @@ from keras.models import Sequential
 
 import keract
 import utils
-from data import get_mnist_data, num_classes
+from data import MNIST
 
 if __name__ == '__main__':
-    x_train, y_train, _, _ = get_mnist_data()
+    x_train, y_train, _, _ = MNIST.get_mnist_data()
 
     # (60000, 28, 28, 1) to ((60000, 28, 28)
     # LSTM has (batch, time_steps, input_dim)
@@ -16,7 +16,7 @@ if __name__ == '__main__':
 
     model = Sequential()
     model.add(LSTM(16, input_shape=(28, 28)))
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dense(MNIST.num_classes, activation='softmax'))
 
     model.compile(loss=keras.losses.categorical_crossentropy,
                   optimizer=keras.optimizers.Adadelta(),
