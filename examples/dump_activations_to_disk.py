@@ -25,3 +25,4 @@ activations2 = load_activations_from_json_file(output)
 # print them.
 print(list(activations.keys()))
 print(list(activations2.keys()))
+print('Dumped to {}.'.format(output))

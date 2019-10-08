@@ -54,7 +54,7 @@ if __name__ == '__main__':
         utils.print_names_and_shapes(keract.get_gradients_of_activations(model, x_train[0:10], y_train[0:10]))
 
         a = keract.get_activations(model, x_test[0:1])  # with just one sample.
-        keract.display_activations(a)
+        keract.display_activations(a, directory='mnist_activations', save=True)
 
         # import numpy as np
         # import matplotlib.pyplot as plt
