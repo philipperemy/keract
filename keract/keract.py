@@ -1,4 +1,5 @@
 import json
+import os
 from collections import OrderedDict
 
 import keras.backend as K
@@ -29,7 +30,7 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
 
 def get_gradients_of_trainable_weights(model, x, y):
     """
-    Get the gradients of trainable_weights for the kernel and the bias nodes for all filters in each layer. 
+    Get the gradients of trainable_weights for the kernel and the bias nodes for all filters in each layer.
     Trainable_weights gradients are averaged over the minibatch.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2']
@@ -44,7 +45,7 @@ def get_gradients_of_trainable_weights(model, x, y):
 
 def get_gradients_of_activations(model, x, y, layer_name=None):
     """
-    Get gradients of the outputs of the activation functions, regarding the loss. 
+    Get gradients of the outputs of the activation functions, regarding the loss.
     Intuitively, it shows how your activation maps change over a tiny modification of the loss.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2']
@@ -88,7 +89,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations, cmap=None, save=False):
+def display_activations(activations, cmap=None, save=False, directory='', data_format='channels_last'):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
@@ -104,24 +105,52 @@ def display_activations(activations, cmap=None, save=False):
         if acts.shape[0] != 1:
             print('-> Skipped. First dimension is not 1.')
             continue
+
+        print('')
+        # channel first
+        if data_format == 'channels_last':
+            c = -1
+        elif data_format == 'channels_first':
+            c = 1
+        nrows = int(math.sqrt(acts.shape[c]) - 0.001) + 1  # best square fit for the given number
+        ncols = int(math.ceil(acts.shape[c] / nrows))
+        fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(24, 24))
+        fig.suptitle(layer_name)
         if len(acts.shape) <= 2:
+            """
             print('-> Skipped. 2D Activations.')
             continue
-        print('')
-        nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
-        ncols = int(math.ceil(acts.shape[-1] / nrows))
-        fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(12, 12))
-        fig.suptitle(layer_name)
-        for i in range(nrows * ncols):
-            if i < acts.shape[-1]:
-                img = acts[0, :, :, i]
-                hmap = axes.flat[i].imshow(img, cmap=cmap)
-            axes.flat[i].axis('off')
+            """
+            # no channel
+            fig, axes = plt.subplots(1, 1, squeeze=False, figsize=(24, 24))
+            fig.suptitle(layer_name)
+            img = acts[0, :]
+            hmap = axes.flat[0].imshow([img], cmap=cmap)
+            axes.flat[0].axis('off')
+        else:
+            for i in range(nrows * ncols):
+                if i < acts.shape[c]:
+                    if len(acts.shape) == 3:
+                        if data_format == 'channels_last':
+                            img = acts[0, :, i]
+                        elif data_format == 'channels_first':
+                            img = acts[0, i, :]
+                        hmap = axes.flat[i].imshow([img], cmap=cmap)
+                    elif len(acts.shape) == 4:
+                        if data_format == 'channels_last':
+                            img = acts[0, :, :, i]
+                        elif data_format == 'channels_first':
+                            img = acts[0, i, :, :]
+                        hmap = axes.flat[i].imshow(img, cmap=cmap)
+                axes.flat[i].axis('off')
         fig.subplots_adjust(right=0.8)
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig('{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            output_filename = os.path.join(directory, '{0}_{1}.png'.format(index, layer_name.split('/')[0]))
+            plt.savefig(output_filename, bbox_inches='tight')
         else:
             plt.show()
         # pyplot figures require manual closing
@@ -129,7 +158,7 @@ def display_activations(activations, cmap=None, save=False):
         plt.close(fig)
 
 
-def display_heatmaps(activations, input_image, save=False, fix=True):
+def display_heatmaps(activations, input_image, directory='', save=False, fix=True):
     """
     Plot heatmaps of activations for all filters overlayed on the input image for each layer
     :param activations: dict mapping layers to corresponding activations with the shape
@@ -194,14 +223,17 @@ def display_heatmaps(activations, input_image, save=False, fix=True):
                 axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
             axes.flat[i].axis('off')
         if save:
-            plt.savefig(f'{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            output_filename = os.path.join(directory, '{0}_{1}.png'.format(index, layer_name.split('/')[0]))
+            plt.savefig(output_filename, bbox_inches='tight')
         else:
             plt.show()
         index += 1
         plt.close(fig)
 
 
-def display_gradients_of_trainable_weights(gradients, save=False):
+def display_gradients_of_trainable_weights(gradients, directory='', save=False):
     """
     Plot in_channels by out_channels grid of grad heatmaps each of dimensions (filter_h, filter_w)
     :param gradients: dict mapping layers to corresponding gradients (filter_h, filter_w, in_channels, out_channels)
@@ -230,7 +262,10 @@ def display_gradients_of_trainable_weights(gradients, save=False):
         cbar = fig.add_axes([0.85, 0.15, 0.03, 0.7])
         fig.colorbar(hmap, cax=cbar)
         if save:
-            plt.savefig(f'{0}_{1}.png'.format(index, layer_name.split('/')[0]), bbox_inches='tight')
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            output_filename = os.path.join(directory, '{0}_{1}.png'.format(index, layer_name.split('/')[0]))
+            plt.savefig(output_filename, bbox_inches='tight')
         else:
             plt.show()
         index += 1
