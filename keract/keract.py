@@ -98,9 +98,14 @@ def get_activations(model, x, layer_name=None):
 def display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last'):
     """
     Plot the activations for each layer using matplotlib
-    :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
-    :param cmap: string - a valid matplotlib colourmap to be used
+    :param activations: dict - mapping layers to corresponding activations (1, output_h, output_w, num_filters)
+    :param cmap: string - a valid matplotlib colormap to be used
     :param save: bool - if the plot should be saved
+    :param directory: string - where to store the activations (if save is True)
+    :param data_format: string - one of "channels_last" (default) or "channels_first".
+    The ordering of the dimensions in the inputs. "channels_last" corresponds to inputs with
+    shape (batch, steps, channels) (default format for temporal data in Keras) while "channels_first"
+    corresponds to inputs with shape (batch, channels, steps).
     :return: None
     """
     import matplotlib.pyplot as plt
@@ -179,6 +184,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     :param input_image: numpy array, input image for the overlay
     :param save: bool, if the plot should be saved
     :param fix: bool, if automated checks and fixes for incorrect images should be run
+    :param directory: string - where to store the activations (if save is True)
     :return: None
     """
     from PIL import Image
@@ -251,6 +257,7 @@ def display_gradients_of_trainable_weights(gradients, directory='.', save=False)
     Plot in_channels by out_channels grid of grad heatmaps each of dimensions (filter_h, filter_w)
     :param gradients: dict mapping layers to corresponding gradients (filter_h, filter_w, in_channels, out_channels)
     :param save: bool- if the plot should be saved
+    :param directory: string - where to store the activations (if save is True)
     :return: None
     """
     import matplotlib.pyplot as plt
