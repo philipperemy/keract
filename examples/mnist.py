@@ -23,7 +23,6 @@ from data import MNIST
 
 if __name__ == '__main__':
     checkpoint_dir = 'checkpoints'
-
     checkpoints = glob(os.path.join(checkpoint_dir, '*.h5'))
 
     from keras.models import load_model

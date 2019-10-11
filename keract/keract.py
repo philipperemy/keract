@@ -22,10 +22,14 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
                   'then just compile your model like that:')
             print('model.compile(loss="mse", optimizer="adam")')
             raise Exception('Compilation of the model required.')
-    symb_inputs = (model._feed_inputs + model._feed_targets + model._feed_sample_weights)
-    f = K.function(symb_inputs, nodes_to_evaluate)
-    x_, y_, sample_weight_ = model._standardize_user_data(x, y)
-    return f(x_ + y_ + sample_weight_)
+
+    def eval_fn(k_inputs):
+        return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
+
+    try:
+        return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
+    except:
+        return eval_fn(model._feed_inputs)
 
 
 def get_gradients_of_trainable_weights(model, x, y):
@@ -55,6 +59,8 @@ def get_gradients_of_activations(model, x, y, layer_name=None):
     :return: dict mapping layers to corresponding gradients of activations (batch_size, output_h, output_w, num_filters)
     """
     nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+    if layer_name is None:
+        nodes.pop()  # last node output does not have any gradient, does it?
     nodes_names = [n.name for n in nodes]
     return _get_gradients(model, x, y, nodes, nodes_names)
 
@@ -89,7 +95,7 @@ def get_activations(model, x, layer_name=None):
     return result
 
 
-def display_activations(activations, cmap=None, save=False, directory='', data_format='channels_last'):
+def display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last'):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict mapping layers to corresponding activations (1, output_h, output_w, num_filters)
@@ -165,7 +171,7 @@ def display_activations(activations, cmap=None, save=False, directory='', data_f
         plt.close(fig)
 
 
-def display_heatmaps(activations, input_image, directory='', save=False, fix=True):
+def display_heatmaps(activations, input_image, directory='.', save=False, fix=True):
     """
     Plot heatmaps of activations for all filters overlayed on the input image for each layer
     :param activations: dict mapping layers to corresponding activations with the shape
@@ -240,7 +246,7 @@ def display_heatmaps(activations, input_image, directory='', save=False, fix=Tru
         plt.close(fig)
 
 
-def display_gradients_of_trainable_weights(gradients, directory='', save=False):
+def display_gradients_of_trainable_weights(gradients, directory='.', save=False):
     """
     Plot in_channels by out_channels grid of grad heatmaps each of dimensions (filter_h, filter_w)
     :param gradients: dict mapping layers to corresponding gradients (filter_h, filter_w, in_channels, out_channels)
