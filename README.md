@@ -180,3 +180,11 @@ python heat_map.py
 <p align="center">
   <img src="assets/heatmap.png">
 </p>
+
+## Tests
+
+Testing is based on Tox.
+```
+pip install tox
+tox
+```
