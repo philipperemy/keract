@@ -248,7 +248,6 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                 # the previously calculated statistics
                 if len(img.shape()) == 1:
                     img = scaler.transform(img.reshape(-1, 1))
-                    img = img.reshape(img.shape[0])
                 else:
                     img = scaler.transform(img)
                     
