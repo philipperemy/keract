@@ -246,8 +246,12 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                         
                 # scales the activation (which will form our heat map) to be in range 0-1 using
                 # the previously calculated statistics
-                img = scaler.transform(img.reshape(-1, 1))
-                img = img.reshape(img.shape[0])
+                if len(img.shape()) == 1:
+                    img = scaler.transform(img.reshape(-1, 1))
+                    img = img.reshape(img.shape[0])
+                else:
+                    img = scaler.transform(img)
+                    
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
