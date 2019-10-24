@@ -228,7 +228,22 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         # loops over each filter/neuron
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
-                img = acts[0, :, :, i]
+                if len(acts.shape) == 3:
+                    #gets the activation of the ith layer
+                    if data_format == 'channels_last':
+                        img = acts[0, :, i]
+                    elif data_format == 'channels_first':
+                        img = acts[0, i, :]
+                    else:
+                        raise Exception('Unknown data_format.')
+                elif len(acts.shape) == 4:
+                    if data_format == 'channels_last':
+                        img = acts[0, :, :, i]
+                    elif data_format == 'channels_first':
+                        img = acts[0, i, :, :]
+                    else:
+                        raise Exception('Unknown data_format.')
+                        
                 # scales the activation (which will form our heat map) to be in range 0-1 using
                 # the previously calculated statistics
                 img = scaler.transform(img)
