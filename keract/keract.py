@@ -192,7 +192,8 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     from sklearn.preprocessing import MinMaxScaler
     import numpy as np
     import math
-
+    
+    data_format = k.image_data_format()
     if fix:
         # fixes common errors made when passing the image
         # I recommend the use of keras' load_img function passed to np.array to ensure
@@ -250,7 +251,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                     img = scaler.transform(img.reshape(-1, 1))
                 else:
                     img = scaler.transform(img)
-                    
+                print(img.shape())
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
