@@ -192,7 +192,8 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     from sklearn.preprocessing import MinMaxScaler
     import numpy as np
     import math
-
+    
+    data_format = k.image_data_format()
     if fix:
         # fixes common errors made when passing the image
         # I recommend the use of keras' load_img function passed to np.array to ensure
@@ -228,10 +229,29 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         # loops over each filter/neuron
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
-                img = acts[0, :, :, i]
+                if len(acts.shape) == 3:
+                    #gets the activation of the ith layer
+                    if data_format == 'channels_last':
+                        img = acts[0, :, i]
+                    elif data_format == 'channels_first':
+                        img = acts[0, i, :]
+                    else:
+                        raise Exception('Unknown data_format.')
+                elif len(acts.shape) == 4:
+                    if data_format == 'channels_last':
+                        img = acts[0, :, :, i]
+                    elif data_format == 'channels_first':
+                        img = acts[0, i, :, :]
+                    else:
+                        raise Exception('Unknown data_format.')
+                        
                 # scales the activation (which will form our heat map) to be in range 0-1 using
                 # the previously calculated statistics
-                img = scaler.transform(img)
+                if len(img.shape()) == 1:
+                    img = scaler.transform(img.reshape(-1, 1))
+                else:
+                    img = scaler.transform(img)
+                print(img.shape())
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
