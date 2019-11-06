@@ -193,7 +193,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     import numpy as np
     import math
     
-    data_format = k.image_data_format()
+    data_format = K.image_data_format()
     if fix:
         # fixes common errors made when passing the image
         # I recommend the use of keras' load_img function passed to np.array to ensure
