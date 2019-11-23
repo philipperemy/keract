@@ -84,6 +84,14 @@ def get_activations(model, x, layer_name=None):
     :return: dict mapping layers to corresponding activations (batch_size, output_h, output_w, num_filters)
     """
     nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+
+    if len(nodes) == 0:
+        if layer_name is not None:
+            network_layers = ', '.join([layer.name for layer in model.layers])
+            raise KeyError('Could not find a layer with name: [{}]. '
+                           'Network layers are [{}]'.format(layer_name, network_layers))
+        else:
+            raise KeyError('Network does not have layers.')
     # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
     input_layer_outputs, layer_outputs = [], []
     [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
@@ -192,7 +200,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     from sklearn.preprocessing import MinMaxScaler
     import numpy as np
     import math
-    
+
     data_format = K.image_data_format()
     if fix:
         # fixes common errors made when passing the image
@@ -230,7 +238,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         for i in range(nrows * ncols):
             if i < acts.shape[-1]:
                 if len(acts.shape) == 3:
-                    #gets the activation of the ith layer
+                    # gets the activation of the ith layer
                     if data_format == 'channels_last':
                         img = acts[0, :, i]
                     elif data_format == 'channels_first':
@@ -244,14 +252,16 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                         img = acts[0, i, :, :]
                     else:
                         raise Exception('Unknown data_format.')
-                        
+                else:
+                    raise Exception('Expect a tensor of 3 or 4 dimensions.')
+
                 # scales the activation (which will form our heat map) to be in range 0-1 using
                 # the previously calculated statistics
-                if len(img.shape()) == 1:
+                if len(img.shape) == 1:
                     img = scaler.transform(img.reshape(-1, 1))
                 else:
                     img = scaler.transform(img)
-                print(img.shape())
+                # print(img.shape)
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
