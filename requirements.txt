@@ -1,4 +1,4 @@
 Keras>=2.2.3
-numpy==1.17.4
+numpy==1.16.2
 h5py
 matplotlib

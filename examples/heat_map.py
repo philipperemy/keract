@@ -28,5 +28,5 @@ import keract
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',
               metrics=['accuracy'])
-activations = keract.get_activations(model, image)
+activations = keract.get_activations(model, image, layer_name='block1_conv1')
 keract.display_heatmaps(activations, arr_image, save=True)
