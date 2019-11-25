@@ -10,7 +10,7 @@ setup(
     long_description=open('README.md').read(),
     packages=['keract'],
     install_requires=[
-        'numpy==1.16.2',
+        'numpy==1.17.4',
         'keras>=2.3.1',
         # tensorflow>=2.0
     ]
