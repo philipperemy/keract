@@ -12,4 +12,3 @@ def print_names_and_values(activations: dict):
         print(layer_activations)
         print('')
     print('-' * 80)
-
