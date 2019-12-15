@@ -1,14 +1,16 @@
+from io import BytesIO
+
+import numpy as np
+import requests
+from PIL import Image
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import decode_predictions
 from keras.applications.vgg16 import preprocess_input
 from keras.preprocessing.image import img_to_array
 
-model = VGG16()
+import keract
 
-from PIL import Image
-import requests
-from io import BytesIO
-import numpy as np
+model = VGG16()
 
 url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Gatto_europeo4.jpg/250px-Gatto_europeo4.jpg'
 response = requests.get(url)
@@ -22,8 +24,6 @@ yhat = model.predict(image)
 label = decode_predictions(yhat)
 label = label[0][0]
 print('{} ({})'.format(label[1], label[2] * 100))
-
-import keract
 
 model.compile(optimizer='adam',
               loss='categorical_crossentropy',

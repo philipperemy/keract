@@ -28,7 +28,7 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
 
     try:
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
-    except:
+    except Exception:
         return eval_fn(model._feed_inputs)
 
 
@@ -53,7 +53,7 @@ def get_gradients_of_activations(model, x, y, layer_name=None):
     Intuitively, it shows how your activation maps change over a tiny modification of the loss.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2']
-    :param x: inputs for which gradients are sought 
+    :param x: inputs for which gradients are sought
     :param y: outputs for which gradients are sought
     :param layer_name: if gradients of a particular layer are sought
     :return: dict mapping layers to corresponding gradients of activations (batch_size, output_h, output_w, num_filters)
