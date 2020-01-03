@@ -87,7 +87,23 @@ def get_gradients_of_activations(model, x, y, layer_name=None, output_format='si
 def _get_gradients(model, x, y, nodes, output_format):
     if model.optimizer is None:
         raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
-    grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    try:
+        grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    except ValueError as e:
+        if 'differentiable' in str(e):
+            # Probably one of the gradients operations is not differentiable...
+            grads = []
+            differentiable_nodes = []
+            for n in nodes:
+                try:
+                    grads.extend(model.optimizer.get_gradients(model.total_loss, n))
+                    differentiable_nodes.append(n)
+                except ValueError:
+                    pass
+            nodes = differentiable_nodes
+        else:
+            raise e
+
     gradients_values = _evaluate(model, grads, x, y)
     nodes_names = [n_(n, output_format) for n in nodes]
     if len(set(nodes_names)) != len(nodes):  # collision detected.
