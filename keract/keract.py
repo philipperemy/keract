@@ -6,7 +6,19 @@ import keras.backend as K
 from keras.models import Model
 
 
-def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
+def n_(node, output_format_):
+    node_name = str(node.name)
+    if output_format_ == 'simple':
+        if '/' in node_name:
+            return node_name.split('/')[0]
+        elif ':' in node_name:
+            return node_name.split(':')[0]
+        else:
+            return node_name
+    return node_name
+
+
+def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
     if not model._is_compiled:
         if model.name in ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']:
             print('Transfer learning detected. Model will be compiled with ("categorical_crossentropy", "adam").')
@@ -17,11 +29,14 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
             print('model.compile(loss="categorical_crossentropy", optimizer="adam")')
             model.compile(loss='categorical_crossentropy', optimizer='adam')
         else:
-            print('Please compile your model first! https://keras.io/models/model/#compile.')
-            print('If you only care about the activations (outputs of the layers), '
-                  'then just compile your model like that:')
-            print('model.compile(loss="mse", optimizer="adam")')
-            raise Exception('Compilation of the model required.')
+            if auto_compile:
+                model.compile(loss='mse', optimizer='adam')
+            else:
+                print('Please compile your model first! https://keras.io/models/model/#compile.')
+                print('If you only care about the activations (outputs of the layers), '
+                      'then just compile your model like that:')
+                print('model.compile(loss="mse", optimizer="adam")')
+                raise Exception('Compilation of the model required.')
 
     def eval_fn(k_inputs):
         return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
@@ -47,45 +62,76 @@ def get_gradients_of_trainable_weights(model, x, y):
     return _get_gradients(model, x, y, nodes, nodes_names)
 
 
-def get_gradients_of_activations(model, x, y, layer_name=None):
+def get_gradients_of_activations(model, x, y, layer_name=None, output_format='simple'):
     """
     Get gradients of the outputs of the activation functions, regarding the loss.
     Intuitively, it shows how your activation maps change over a tiny modification of the loss.
     :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
-    'mobilenet_v2', 'mobilenetv2']
-    :param x: inputs for which gradients are sought
-    :param y: outputs for which gradients are sought
-    :param layer_name: if gradients of a particular layer are sought
-    :return: dict mapping layers to corresponding gradients of activations (batch_size, output_h, output_w, num_filters)
+    'mobilenet_v2', 'mobilenetv2'].
+    :param x: Model input (Numpy array). In the case of multi-inputs, x should be of type List.
+    :param y: Model target (Numpy array). In the case of multi-inputs, y should be of type List.
+    :param layer_name: (optional) Name of a layer for which activations should be returned only. It is useful in
+    very big networks when it is computationally expensive to evaluate all the layers/nodes.
+    :param output_format: Change the output dictionary key of the function.
+    - 'simple': output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+    - 'full': output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+    - 'numbered': output key will be an index range, based on the order of definition of each layer within the model.
+    :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
     nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
-    if layer_name is None:
-        nodes.pop()  # last node output does not have any gradient, does it?
-    nodes_names = [n.name for n in nodes]
-    return _get_gradients(model, x, y, nodes, nodes_names)
+    return _get_gradients(model, x, y, nodes, output_format)
 
 
-def _get_gradients(model, x, y, nodes, nodes_names):
+def _get_gradients(model, x, y, nodes, output_format):
     if model.optimizer is None:
         raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
-    grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    try:
+        grads = model.optimizer.get_gradients(model.total_loss, nodes)
+    except ValueError as e:
+        if 'differentiable' in str(e):
+            # Probably one of the gradients operations is not differentiable...
+            grads = []
+            differentiable_nodes = []
+            for n in nodes:
+                try:
+                    grads.extend(model.optimizer.get_gradients(model.total_loss, n))
+                    differentiable_nodes.append(n)
+                except ValueError:
+                    pass
+            nodes = differentiable_nodes
+        else:
+            raise e
+
     gradients_values = _evaluate(model, grads, x, y)
-    result = dict(zip(nodes_names, gradients_values))
-    return result
+    nodes_names = [n_(n, output_format) for n in nodes]
+    if len(set(nodes_names)) != len(nodes):  # collision detected.
+        nodes_names = [n_(n, 'full') for n in nodes]
+    return OrderedDict(zip(nodes_names, gradients_values))
 
 
-def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
+def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
+                    output_format='simple', auto_compile=True):
     """
     Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
     By default, all the activations for all the layers are returned.
     :param model: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2', ...].
-    :param x: Numpy array to feed the model as input. In the case of multi-inputs, x should be of type List.
-    :param layer_name: (optional) Name of a layer for which activations should be returned.
-    :param nodes_to_evaluate: (optional) List of Keras nodes to be evaluated.
-    :return: Dict {layer_name -> activation of the layer (Numpy array)}.
+    :param x: Model input (Numpy array). In the case of multi-inputs, x should be of type List.
+    :param layer_name: (optional) Name of a layer for which activations should be returned only. It is useful in
+    very big networks when it is computationally expensive to evaluate all the layers/nodes.
+    :param nodes_to_evaluate: (optional) List of Keras nodes to be evaluated. Useful when the nodes are not
+    in model.layers.
+    :param output_format: Change the output dictionary key of the function.
+    - 'simple': output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+    - 'full': output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+    - 'numbered': output key will be an index range, based on the order of definition of each layer within the model.
+    :param auto_compile: If set to True, will auto-compile the model if needed.
+    :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
-
     if nodes_to_evaluate is None:
         nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
     else:
@@ -99,15 +145,26 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
             raise KeyError('Could not find a layer with name: [{}]. '
                            'Network layers are [{}]'.format(layer_name, network_layers))
         else:
-            raise KeyError('Network does not have layers.')
-    # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
+            raise ValueError('Nodes list is empty. Or maybe the model is empty.')
+
+    # The placeholders are processed later (Inputs node in Keras). Due to a small bug in tensorflow.
     input_layer_outputs, layer_outputs = [], []
     [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
-    activations = _evaluate(model, layer_outputs, x, y=None)
-    activations_dict = OrderedDict(zip([output.name for output in layer_outputs], activations))
-    activations_inputs_dict = OrderedDict(zip([output.name for output in input_layer_outputs], x))
-    result = activations_inputs_dict.copy()
-    result.update(activations_dict)
+    activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
+
+    def craft_output(output_format_):
+        activations_dict = OrderedDict(zip([n_(output, output_format_) for output in layer_outputs], activations))
+        activations_inputs_dict = OrderedDict(zip([n_(output, output_format_) for output in input_layer_outputs], x))
+        result_ = activations_inputs_dict.copy()
+        result_.update(activations_dict)
+        if output_format_ == 'numbered':
+            result_ = OrderedDict([(i, v) for i, (k, v) in enumerate(result_.items())])
+        return result_
+
+    result = craft_output(output_format)
+    if nodes_to_evaluate is not None and len(result) != len(nodes_to_evaluate):
+        result = craft_output(output_format_='full')  # collision detected in the keys.
+
     return result
 
 
