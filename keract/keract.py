@@ -76,13 +76,14 @@ def _get_gradients(model, x, y, nodes, nodes_names):
 
 def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
     """
-    Get output activations for all filters for each layer.
+    Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
+    By default, all the activations for all the layers are returned.
     :param model: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
-    'mobilenet_v2', 'mobilenetv2'].
-    :param x: Input for which activations are sought (can be a batch input).
-    :param layer_name: if activations of a particular layer are sought.
-    :param nodes_to_evaluate: List of Keras nodes to be evaluated. Default is the output of each layer of the model.
-    :return: Dict layers -> activations (Numpy array) (batch_size, [shape_of_activation]).
+    'mobilenet_v2', 'mobilenetv2', ...].
+    :param x: Numpy array to feed the model as input. In the case of multi-inputs, x should be of type List.
+    :param layer_name: (optional) Name of a layer for which activations should be returned.
+    :param nodes_to_evaluate: (optional) List of Keras nodes to be evaluated.
+    :return: Dict {layer_name -> activation of the layer (Numpy array)}.
     """
 
     if nodes_to_evaluate is None:
