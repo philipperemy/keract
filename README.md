@@ -37,7 +37,6 @@ By default, all the activations for all the layers are returned.
 - `layer_name`: (optional) Name of a layer for which activations should be returned.
 - `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
 Returns : Dict {layer_name -> activation of the layer (Numpy array)}.
-The output is a dictionary containing the activations for each layer of `model` for the input `x`:
 
 ```
 {
