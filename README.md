@@ -13,7 +13,7 @@ pip install keract
 
 ## API
 
-- [get_activations](#get-activations-outputs-of-each-layer)
+- [get_activations](#get-activations-nodeslayers-outputs-as-numpy-arrays)
 - [display_activations](#display-the-activations-youve-obtained)
 - [display_heatmaps](#display-the-activations-as-a-heatmap-overlaid-on-an-image)
 - [get_gradients_of_trainable_weights](#get-gradients-of-weights)
