@@ -41,15 +41,6 @@ By default, all the activations for all the layers are returned.
 
 Returns: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
 
-```
-{
-  'layer_1': np.array(...),
-  'layer_2': np.array(...),
-  ...,
-  'layer_n': np.array(...)
-}
-```
-
 *Example*
 
 ```python
@@ -77,6 +68,14 @@ activations = get_activations(model, x, auto_compile=True)
 
 # print the activations shapes.
 [print(k, '->', v.shape, '- Numpy array') for (k, v) in activations.items()]
+
+# Print output:
+# i1 -> (32, 10) - Numpy array
+# i2 -> (32, 10) - Numpy array
+# fc1 -> (32, 1) - Numpy array
+# fc2 -> (32, 1) - Numpy array
+# concat -> (32, 2) - Numpy array
+# out -> (32, 1) - Numpy array
 ```
 
 `get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
