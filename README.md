@@ -41,10 +41,10 @@ Returns: Dict {layer_name -> activation of the layer (Numpy array)}.
 
 ```
 {
-  'conv2d_1/Relu:0': np.array(...),
-  'conv2d_2/Relu:0': np.array(...),
+  'layer_1': np.array(...),
+  'layer_2': np.array(...),
   ...,
-  'dense_2/Softmax:0': np.array(...)
+  'layer_n': np.array(...)
 }
 ```
 
