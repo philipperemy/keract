@@ -6,7 +6,7 @@ import keras.backend as K
 from keras.models import Model
 
 
-def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
+def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
     if not model._is_compiled:
         if model.name in ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']:
             print('Transfer learning detected. Model will be compiled with ("categorical_crossentropy", "adam").')
@@ -17,11 +17,14 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None):
             print('model.compile(loss="categorical_crossentropy", optimizer="adam")')
             model.compile(loss='categorical_crossentropy', optimizer='adam')
         else:
-            print('Please compile your model first! https://keras.io/models/model/#compile.')
-            print('If you only care about the activations (outputs of the layers), '
-                  'then just compile your model like that:')
-            print('model.compile(loss="mse", optimizer="adam")')
-            raise Exception('Compilation of the model required.')
+            if auto_compile:
+                model.compile(loss='mse', optimizer='adam')
+            else:
+                print('Please compile your model first! https://keras.io/models/model/#compile.')
+                print('If you only care about the activations (outputs of the layers), '
+                      'then just compile your model like that:')
+                print('model.compile(loss="mse", optimizer="adam")')
+                raise Exception('Compilation of the model required.')
 
     def eval_fn(k_inputs):
         return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
@@ -74,18 +77,27 @@ def _get_gradients(model, x, y, nodes, nodes_names):
     return result
 
 
-def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
+def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
+                    output_format='simple', auto_compile=True):
     """
     Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
     By default, all the activations for all the layers are returned.
     :param model: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2', ...].
-    :param x: Numpy array to feed the model as input. In the case of multi-inputs, x should be of type List.
-    :param layer_name: (optional) Name of a layer for which activations should be returned.
-    :param nodes_to_evaluate: (optional) List of Keras nodes to be evaluated.
-    :return: Dict {layer_name -> activation of the layer (Numpy array)}.
+    :param x: Model input (Numpy array). In the case of multi-inputs, x should be of type List.
+    :param layer_name: (optional) Name of a layer for which activations should be returned only. It is useful in
+    very big networks when it is computationally expensive to evaluate all the layers/nodes.
+    :param nodes_to_evaluate: (optional) List of Keras nodes to be evaluated. Useful when the nodes are not
+    in model.layers.
+    :param output_format: Change the output dictionary key of the function.
+    - 'simple': output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+    - 'full': output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+    - 'numbered': output key will be an index range, based on the order of definition of each layer within the model.
+    :param auto_compile: If set to True, will auto-compile the model if needed.
+    :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
-
     if nodes_to_evaluate is None:
         nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
     else:
@@ -100,14 +112,37 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
                            'Network layers are [{}]'.format(layer_name, network_layers))
         else:
             raise KeyError('Network does not have layers.')
-    # we process the placeholders later (Inputs node in Keras). Because there's a bug in Tensorflow.
+
+    # The placeholders are processed later (Inputs node in Keras). Due to a small bug in tensorflow.
     input_layer_outputs, layer_outputs = [], []
     [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
-    activations = _evaluate(model, layer_outputs, x, y=None)
-    activations_dict = OrderedDict(zip([output.name for output in layer_outputs], activations))
-    activations_inputs_dict = OrderedDict(zip([output.name for output in input_layer_outputs], x))
-    result = activations_inputs_dict.copy()
-    result.update(activations_dict)
+    activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
+
+    def craft_output(output_format_):
+
+        def n(node):
+            node_name = str(node.name)
+            if output_format_ == 'simple':
+                if '/' in node_name:
+                    return node_name.split('/')[0]
+                elif ':' in node_name:
+                    return node_name.split(':')[0]
+                else:
+                    return node_name
+            return node_name
+
+        activations_dict = OrderedDict(zip([n(output) for output in layer_outputs], activations))
+        activations_inputs_dict = OrderedDict(zip([n(output) for output in input_layer_outputs], x))
+        result_ = activations_inputs_dict.copy()
+        result_.update(activations_dict)
+        if output_format_ == 'numbered':
+            result_ = OrderedDict([(i, v) for i, (k, v) in enumerate(result_.items())])
+        return result_
+
+    result = craft_output(output_format)
+    if nodes_to_evaluate is not None and len(result) != len(nodes_to_evaluate):
+        result = craft_output(output_format_='full')  # collision detected in the keys.
+
     return result
 
 

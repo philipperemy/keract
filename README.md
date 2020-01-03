@@ -24,9 +24,34 @@ pip install keract
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
 ```python
+import numpy as np
+from keras import Input, Model
+from keras.layers import Dense, concatenate
 from keract import get_activations
-activations = get_activations(model, x, layer_name=None, nodes_to_evaluate=None)
+
+# model definition
+i1 = Input(shape=(10,), name='i1')
+i2 = Input(shape=(10,), name='i2')
+
+a = Dense(1, name='fc1')(i1)
+b = Dense(1, name='fc2')(i2)
+
+c = concatenate([a, b], name='concat')
+d = Dense(1, name='out')(c)
+model = Model(inputs=[i1, i2], outputs=[d])
+
+# inputs to the model
+x = [np.random.uniform(size=(32, 10)), np.random.uniform(size=(32, 10))]
+
+# call to fetch the activations of the model.
+activations = get_activations(model, x, auto_compile=True)
+
+# print the activations shapes.
+[print(k, '->', v.shape, '- Numpy array') for (k, v) in activations.items()]
 ```
+
+`get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
+output_format='default', auto_compile=True)`
 
 Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
 By default, all the activations for all the layers are returned.
