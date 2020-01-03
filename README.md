@@ -23,6 +23,35 @@ pip install keract
 
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
+Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
+By default, all the activations for all the layers are returned.
+
+- `model`: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2', ...].
+- `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
+- `layer_name`: (optional) Name of a layer for which activations should be returned.
+- `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
+- `output_format`: Change the output dictionary key of the function.
+   - `simple`: output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+   - `full`: output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+   - `numbered`: output key will be an index range, based on the order of definition of each layer within the model.
+- `auto_compile`: If set to True, will auto-compile the model if needed.
+
+Returns: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
+
+```
+{
+  'layer_1': np.array(...),
+  'layer_2': np.array(...),
+  ...,
+  'layer_n': np.array(...)
+}
+```
+
+*Example*
+
 ```python
 import numpy as np
 from keras import Input, Model
@@ -53,33 +82,6 @@ activations = get_activations(model, x, auto_compile=True)
 `get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
 output_format='default', auto_compile=True)`
 
-Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
-By default, all the activations for all the layers are returned.
-
-- `model`: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
-    'mobilenet_v2', 'mobilenetv2', ...].
-- `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
-- `layer_name`: (optional) Name of a layer for which activations should be returned.
-- `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
-- `output_format`: Change the output dictionary key of the function.
-   - `simple`: output key will match the names of the Keras layers. For example Dense(1, name='d1') will
-    return {'d1': ...}.
-   - `full`: output key will match the full name of the output layer name. In the example above, it will
-    return {'d1/BiasAdd:0': ...}.
-   - `numbered`: output key will be an index range, based on the order of definition of each layer within the model.
-- `auto_compile`: If set to True, will auto-compile the model if needed.
-
-Returns: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
-
-```
-{
-  'layer_1': np.array(...),
-  'layer_2': np.array(...),
-  ...,
-  'layer_n': np.array(...)
-}
-```
-
 ### Display the activations you've obtained
 
 ```python
@@ -103,28 +105,33 @@ Inputs are:
 - `activations` a dictionary mapping layers to their activations (the output of get_activations)
 - `input_image`  a numpy array of the image you inputed to the get_activations
 - `save`(optional) a bool, if True the images of the activations are saved rather than being shown
+
 ### Get gradients of weights
+
+`get_gradients_of_trainable_weights(model, x, y)`
+
 - `model` is a `keras.models.Model` object.
 - `x`: Input data (numpy array). Keras convention.
 - `y`: Labels (numpy array). Keras convention.
-
-```python
-from keract import get_gradients_of_trainable_weights
-get_gradients_of_trainable_weights(model, x, y)
-```
 
 The output is a dictionary mapping each trainable weight to the values of its gradients (regarding x and y).
 
 ### Get gradients of activations
 
+`get_gradients_of_activations(model, x, y, layer_name=None, output_format='simple')`
+
 - `model` is a `keras.models.Model` object.
 - `x`: Input data (numpy array). Keras convention.
 - `y`: Labels (numpy array). Keras convention.
+- `layer_name`: (optional) Name of a layer for which activations should be returned.
+- `output_format`: Change the output dictionary key of the function.
+   - `simple`: output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+   - `full`: output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+   - `numbered`: output key will be an index range, based on the order of definition of each layer within the model.
 
-```python
-from keract import get_gradients_of_activations
-get_gradients_of_activations(model, x, y)
-```
+Returns: Dict {layer_name (specified by output_format) -> grad activation of the layer output/node (Numpy array)}.
 
 The output is a dictionary mapping each layer to the values of its gradients (regarding x and y).
 
