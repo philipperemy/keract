@@ -21,7 +21,7 @@ pip install keract
 - [persist_to_json_file](#persist-activations-to-json)
 - [load_activations_from_json_file](#load-activations-from-json)
 
-### Get activations (outputs of each layer)
+### Get activations (nodes/layers outputs as Numpy arrays)
 
 ```python
 from keract import get_activations
