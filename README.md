@@ -25,15 +25,19 @@ pip install keract
 
 ```python
 from keract import get_activations
-activations = get_activations(model, x, layer_name)
+activations = get_activations(model, x, layer_name=None, nodes_to_evaluate=None)
 ```
 
-Inputs are:
-- `model` is a `keras.models.Model` object.
-- `x` is a numpy array to feed to the model as input. In the case of multi-input, `x` is of type List. We use the Keras convention (as used in predict, fit...).
-- `layer_name` (optional) - the layer to get activations for if you only want the activations for one layer
+Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
+By default, all the activations for all the layers are returned.
 
-The output is a dictionary containing the activations for each layer of `model` for the input x:
+- `model`: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2', ...].
+- `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
+- `layer_name`: (optional) Name of a layer for which activations should be returned.
+- `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
+Returns : Dict {layer_name -> activation of the layer (Numpy array)}.
+The output is a dictionary containing the activations for each layer of `model` for the input `x`:
 
 ```
 {
@@ -43,8 +47,6 @@ The output is a dictionary containing the activations for each layer of `model` 
   'dense_2/Softmax:0': np.array(...)
 }
 ```
-
-The key is the name of the layer and the value is the corresponding output of the layer for the given input `x`.
 
 ### Display the activations you've obtained
 
