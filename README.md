@@ -23,6 +23,10 @@ pip install keract
 
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
+```python
+get_activations(model, x, layer_name=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
+```
+
 Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
 By default, all the activations for all the layers are returned.
 
@@ -77,9 +81,6 @@ activations = get_activations(model, x, auto_compile=True)
 # concat -> (32, 2) - Numpy array
 # out -> (32, 1) - Numpy array
 ```
-
-`get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
-output_format='default', auto_compile=True)`
 
 ### Display the activations you've obtained
 
