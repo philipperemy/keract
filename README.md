@@ -36,7 +36,8 @@ By default, all the activations for all the layers are returned.
 - `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `layer_name`: (optional) Name of a layer for which activations should be returned.
 - `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
-Returns : Dict {layer_name -> activation of the layer (Numpy array)}.
+
+Returns: Dict {layer_name -> activation of the layer (Numpy array)}.
 
 ```
 {
