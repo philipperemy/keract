@@ -36,8 +36,15 @@ By default, all the activations for all the layers are returned.
 - `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `layer_name`: (optional) Name of a layer for which activations should be returned.
 - `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
+- `output_format`: Change the output dictionary key of the function.
+   - `simple`: output key will match the names of the Keras layers. For example Dense(1, name='d1') will
+    return {'d1': ...}.
+   - `full`: output key will match the full name of the output layer name. In the example above, it will
+    return {'d1/BiasAdd:0': ...}.
+   - `numbered`: output key will be an index range, based on the order of definition of each layer within the model.
+- `auto_compile`: If set to True, will auto-compile the model if needed.
 
-Returns: Dict {layer_name -> activation of the layer (Numpy array)}.
+Returns: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
 
 ```
 {
