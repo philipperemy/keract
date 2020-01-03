@@ -74,16 +74,23 @@ def _get_gradients(model, x, y, nodes, nodes_names):
     return result
 
 
-def get_activations(model, x, layer_name=None):
+def get_activations(model, x, layer_name=None, nodes_to_evaluate=None):
     """
-    Get output activations for all filters for each layer
-    :param model: keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
-    'mobilenet_v2', 'mobilenetv2']
-    :param x: input for which activations are sought (can be a batch input)
-    :param layer_name: if activations of a particular layer are sought
-    :return: dict mapping layers to corresponding activations (batch_size, output_h, output_w, num_filters)
+    Get output activations for all filters for each layer.
+    :param model: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
+    'mobilenet_v2', 'mobilenetv2'].
+    :param x: Input for which activations are sought (can be a batch input).
+    :param layer_name: if activations of a particular layer are sought.
+    :param nodes_to_evaluate: List of Keras nodes to be evaluated. Default is the output of each layer of the model.
+    :return: Dict layers -> activations (Numpy array) (batch_size, [shape_of_activation]).
     """
-    nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+
+    if nodes_to_evaluate is None:
+        nodes = [layer.output for layer in model.layers if layer.name == layer_name or layer_name is None]
+    else:
+        if layer_name is not None:
+            raise ValueError('Do not specify a [layer_name] with [nodes_to_evaluate]. It will not be used.')
+        nodes = nodes_to_evaluate
 
     if len(nodes) == 0:
         if layer_name is not None:
