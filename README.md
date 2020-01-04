@@ -24,7 +24,7 @@ pip install keract
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
 ```python
-get_activations(model, x, layer_name=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
+keract.get_activations(model, x, layer_name=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
 ```
 
 Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
@@ -85,8 +85,7 @@ activations = get_activations(model, x, auto_compile=True)
 ### Display the activations you've obtained
 
 ```python
-from keract import display_activations
-display_activations(activations, cmap="gray", save=False)
+keract.display_activations(activations, cmap="gray", save=False)
 ```
 
 Inputs are:
@@ -97,8 +96,7 @@ Inputs are:
 ### Display the activations as a heatmap overlaid on an image
 
 ```python
-from keract import display_heatmaps
-display_heatmaps(activations, input_image, save=False)
+keract.display_heatmaps(activations, input_image, save=False)
 ```
 
 Inputs are:
@@ -108,20 +106,24 @@ Inputs are:
 
 ### Get gradients of weights
 
-`get_gradients_of_trainable_weights(model, x, y)`
+```python
+keract.get_gradients_of_trainable_weights(model, x, y)
+```
 
 - `model` is a `keras.models.Model` object.
-- `x`: Input data (numpy array). Keras convention.
+- `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `y`: Labels (numpy array). Keras convention.
 
 The output is a dictionary mapping each trainable weight to the values of its gradients (regarding x and y).
 
 ### Get gradients of activations
 
-`get_gradients_of_activations(model, x, y, layer_name=None, output_format='simple')`
+```python
+keract.get_gradients_of_activations(model, x, y, layer_name=None, output_format='simple')
+```
 
 - `model` is a `keras.models.Model` object.
-- `x`: Input data (numpy array). Keras convention.
+- `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `y`: Labels (numpy array). Keras convention.
 - `layer_name`: (optional) Name of a layer for which activations should be returned.
 - `output_format`: Change the output dictionary key of the function.
@@ -137,22 +139,20 @@ The output is a dictionary mapping each layer to the values of its gradients (re
 
 ### Persist activations to JSON
 
+```python
+keract.persist_to_json_file(activations, filename)
+```
+
 - `activations`: activations (dict mapping layers)
 - `filename`: output filename (JSON format)
 
-```python
-from keract import persist_to_json_file
-persist_to_json_file(activations, filename)
-```
-
 ### Load activations from JSON
 
-- `filename`: filename to read the activations from (JSON format)
-
 ```python
-from keract import persist_to_json_file
-load_activations_from_json_file(filename)
+keract.load_activations_from_json_file(filename)
 ```
+
+- `filename`: filename to read the activations from (JSON format)
 
 It returns the activations.
 
