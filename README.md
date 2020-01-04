@@ -85,13 +85,19 @@ activations = get_activations(model, x, auto_compile=True)
 ### Display the activations you've obtained
 
 ```python
-keract.display_activations(activations, cmap="gray", save=False)
+keract.display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last')
 ```
 
+Plot the activations for each layer using matplotlib
+
 Inputs are:
-- `activations` a dictionary mapping layers to their activations (the output of get_activations)
-- `cmap` (optional) a string of a valid matplotlib colourmap
+- `activations` dict - a dictionary mapping layers to their activations (the output of get_activations)
+- `cmap` (optional) string - a valid matplotlib colormap to be used
 - `save`(optional) a bool, if True the images of the activations are saved rather than being shown
+- `directory`: (optional) string - where to store the activations (if save is True)
+- `data_format`: (optional) tring - one of "channels_last" (default) or "channels_first".
+
+The ordering of the dimensions in the inputs. "channels_last" corresponds to inputs with shape (batch, steps, channels) (default format for temporal data in Keras) while "channels_first" corresponds to inputs with shape (batch, channels, steps).
 
 ### Display the activations as a heatmap overlaid on an image
 
@@ -99,10 +105,14 @@ Inputs are:
 keract.display_heatmaps(activations, input_image, save=False)
 ```
 
+Plot heatmaps of activations for all filters overlayed on the input image for each layer
+
 Inputs are:
-- `activations` a dictionary mapping layers to their activations (the output of get_activations)
-- `input_image`  a numpy array of the image you inputed to the get_activations
-- `save`(optional) a bool, if True the images of the activations are saved rather than being shown
+- `activations`: a dictionary mapping layers to their activations (the output of get_activations).
+- `input_image`:  numpy array of the image you inputed to the get_activations.
+- `save`(optional) bool - if True the images of the activations are saved rather than being shown.
+- `fix`: (optional) bool - if automated checks and fixes for incorrect images should be run.
+- `directory`: string - where to store the activations (if save is True).
 
 ### Get gradients of weights
 
@@ -222,10 +232,3 @@ python heat_map.py
   <img src="assets/heatmap.png">
 </p>
 
-## Tests
-
-Testing is based on Tox.
-```
-pip install tox
-tox
-```
