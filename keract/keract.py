@@ -329,7 +329,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                 # print(img.shape)
                 img = Image.fromarray(img)
                 # resizes the activation to be same dimensions of input_image
-                img = img.resize((input_image.shape[0], input_image.shape[1]), Image.LANCZOS)
+                img = img.resize((input_image.shape[1], input_image.shape[0]), Image.LANCZOS)
                 img = np.array(img)
                 axes.flat[i].imshow(input_image / 255.0)
                 # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
