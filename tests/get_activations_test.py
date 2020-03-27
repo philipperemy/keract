@@ -1,9 +1,9 @@
 import unittest
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 import numpy as np
-from keras import Input, Model
-from keras.layers import Dense, concatenate
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights
 
