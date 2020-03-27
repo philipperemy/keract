@@ -1,6 +1,7 @@
+import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers.recurrent import LSTM
+from tensorflow.keras.layers import LSTM
 from tensorflow.keras.models import Sequential
 
 import keract
@@ -8,6 +9,13 @@ import utils
 from data import MNIST
 
 if __name__ == '__main__':
+    # Check for GPUs and set them to dynamically grow memory as needed
+    # Avoids OOM from tensorflow greedily allocating GPU memory
+    physical_devices = tf.config.list_physical_devices('GPU')
+    if physical_devices:
+        for dev in physical_devices:
+            tf.config.experimental.set_memory_growth(dev, True)
+
     x_train, y_train, _, _ = MNIST.get_mnist_data()
 
     # (60000, 28, 28, 1) to ((60000, 28, 28)
