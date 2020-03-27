@@ -1,7 +1,7 @@
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import decode_predictions
-from keras.applications.vgg16 import preprocess_input
-from keras.preprocessing.image import img_to_array
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg16 import decode_predictions
+from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.preprocessing.image import img_to_array
 from PIL import Image
 import requests
 from io import BytesIO

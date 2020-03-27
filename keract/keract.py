@@ -2,8 +2,8 @@ import json
 import os
 from collections import OrderedDict
 
-import keras.backend as K
-from keras.models import Model
+import tensorflow.keras.backend as K
+from tensorflow.keras.models import Model
 
 
 def n_(node, output_format_):

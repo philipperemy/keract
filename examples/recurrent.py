@@ -1,7 +1,7 @@
-import keras
-from keras.layers import Dense
-from keras.layers.recurrent import LSTM
-from keras.models import Sequential
+import tensorflow.keras as keras
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers.recurrent import LSTM
+from tensorflow.keras.models import Sequential
 
 import keract
 import utils

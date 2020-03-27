@@ -3,10 +3,10 @@ from io import BytesIO
 import numpy as np
 import requests
 from PIL import Image
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import decode_predictions
-from keras.applications.vgg16 import preprocess_input
-from keras.preprocessing.image import img_to_array
+from tensorflow.keras.applications.vgg16 import VGG16
+from tensorflow.keras.applications.vgg16 import decode_predictions
+from tensorflow.keras.applications.vgg16 import preprocess_input
+from tensorflow.keras.preprocessing.image import img_to_array
 
 import keract
 

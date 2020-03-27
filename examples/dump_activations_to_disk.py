@@ -1,6 +1,6 @@
 import numpy as np
-from keras import Sequential
-from keras.layers import Dropout, Dense
+from tensorflow.keras import Sequential
+from tensorflow.keras.layers import Dropout, Dense
 
 from keract import get_activations, persist_to_json_file, load_activations_from_json_file
 

@@ -1,6 +1,6 @@
 import numpy as np
-from keras.layers import Add, Dense
-from keras.models import Input, Model
+from tensorflow.keras.layers import Add, Dense
+from tensorflow.keras.models import Input, Model
 
 import keract
 import utils
