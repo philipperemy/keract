@@ -2,10 +2,10 @@ import os
 import unittest
 from glob import glob
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 import numpy as np
-from keras import Input, Model
-from keras.layers import Dense
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense
 
 from keract import get_activations, display_activations
 

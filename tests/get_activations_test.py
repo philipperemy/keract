@@ -1,17 +1,17 @@
 import unittest
 
-import keras.backend as K
+import tensorflow.keras.backend as K
 import numpy as np
-from keras import Input, Model
-from keras.layers import Dense, concatenate
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights
 
 
-def dummy_model_and_inputs():
+def dummy_model_and_inputs(**kwargs):
     i1 = Input(shape=(10,), name='i1')
     a = Dense(1, name='fc1')(i1)
-    model = Model(inputs=[i1], outputs=[a])
+    model = Model(inputs=[i1], outputs=[a], **kwargs)
     x = np.random.uniform(size=(32, 10))
     return model, x
 
@@ -98,12 +98,11 @@ class GetActivationsTest(unittest.TestCase):
             np.testing.assert_almost_equal(n, s)
 
         self.assertListEqual(list(simple.keys()), ['i1', 'fc1'])
-        self.assertListEqual(list(full.keys()), ['i1:0', 'fc1/BiasAdd:0'])
+        self.assertListEqual(list(full.keys()), ['i1:0', 'fc1/Identity:0'])
         self.assertListEqual(list(numbered.keys()), [0, 1])
 
     def test_compile_vgg16_model(self):
-        model, x = dummy_model_and_inputs()
-        model.name = 'vgg16'  # spoof identity here!
+        model, x = dummy_model_and_inputs(name="vgg16")
         get_activations(model, x, auto_compile=False)
         self.assertTrue(model._is_compiled)
 

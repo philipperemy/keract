@@ -1,5 +1,5 @@
-import keras
-from keras.datasets import mnist
+import tensorflow.keras as keras
+from tensorflow.keras.datasets import mnist
 
 
 class MNIST:
