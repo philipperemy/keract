@@ -11,10 +11,7 @@ from data import MNIST
 if __name__ == '__main__':
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
-    physical_devices = tf.config.list_physical_devices('GPU')
-    if physical_devices:
-        for dev in physical_devices:
-            tf.config.experimental.set_memory_growth(dev, True)
+    utils.gpu_dynamic_mem_growth()
 
     x_train, y_train, _, _ = MNIST.get_mnist_data()
 

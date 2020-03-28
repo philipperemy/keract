@@ -2,16 +2,11 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dropout, Dense
-
+from utils import gpu_dynamic_mem_growth
 from keract import get_activations, persist_to_json_file, load_activations_from_json_file
 
 if __name__ == "__main__":
-    # Check for GPUs and set them to dynamically grow memory as needed
-    # Avoids OOM from tensorflow greedily allocating GPU memory
-    physical_devices = tf.config.list_physical_devices('GPU')
-    if physical_devices:
-        for dev in physical_devices:
-            tf.config.experimental.set_memory_growth(dev, True)
+    gpu_dynamic_mem_growth()
 
     # define the model.
     model = Sequential()
