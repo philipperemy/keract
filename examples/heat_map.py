@@ -3,7 +3,6 @@ from io import BytesIO
 import numpy as np
 import requests
 from PIL import Image
-import tensorflow as tf
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg16 import decode_predictions
 from tensorflow.keras.applications.vgg16 import preprocess_input

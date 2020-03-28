@@ -1,9 +1,9 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dropout, Dense
-from utils import gpu_dynamic_mem_growth
+
 from keract import get_activations, persist_to_json_file, load_activations_from_json_file
+from utils import gpu_dynamic_mem_growth
 
 if __name__ == "__main__":
     gpu_dynamic_mem_growth()

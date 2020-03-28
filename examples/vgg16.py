@@ -1,12 +1,15 @@
+from io import BytesIO
+
+import requests
 import tensorflow as tf
+from PIL import Image
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg16 import decode_predictions
 from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
-from PIL import Image
-import requests
-from io import BytesIO
+
 import keract
+
 if __name__ == "__main__":
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
