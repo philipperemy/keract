@@ -32,3 +32,7 @@ class DisplayActivationsTest(unittest.TestCase):
         model, x = dummy_model_and_inputs()
         acts = get_activations(model, x)
         display_activations(acts, save=True)
+
+    def test_display_2(self):
+        acts = {'1_channel': np.random.uniform(size=(1, 32, 32, 1))}
+        display_activations(acts, save=True)
