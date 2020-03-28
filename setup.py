@@ -1,9 +1,11 @@
 from setuptools import setup
 
+from keract import __version__
+
 setup(
     name='keract',
-    version='3.1.0',
-    description='Keract - Keras Activations and Gradients',
+    version=__version__,
+    description='Keract - Tensorflow Keras Activations and Gradients',
     author='Philippe Remy',
     license='MIT',
     long_description_content_type='text/markdown',
