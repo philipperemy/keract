@@ -2,8 +2,8 @@ import os
 import unittest
 from glob import glob
 
-import tensorflow.keras.backend as K
 import numpy as np
+import tensorflow.keras.backend as K
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense
 
