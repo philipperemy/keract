@@ -1,7 +1,6 @@
 from io import BytesIO
 
 import requests
-import tensorflow as tf
 from PIL import Image
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg16 import decode_predictions
