@@ -9,14 +9,12 @@ from tensorflow.keras.applications.vgg16 import preprocess_input
 from tensorflow.keras.preprocessing.image import img_to_array
 
 import keract
+from utils import gpu_dynamic_mem_growth
 
 if __name__ == "__main__":
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
-    physical_devices = tf.config.list_physical_devices('GPU')
-    if physical_devices:
-        for dev in physical_devices:
-            tf.config.experimental.set_memory_growth(dev, True)
+    gpu_dynamic_mem_growth()
     model = VGG16()
 
     url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Gatto_' \
