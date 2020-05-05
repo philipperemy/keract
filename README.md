@@ -2,6 +2,7 @@
 
 [![Downloads](https://pepy.tech/badge/keract)](https://pepy.tech/project/keract)
 [![Downloads](https://pepy.tech/badge/keract/month)](https://pepy.tech/project/keract)
+![Keract CI](https://github.com/philipperemy/keract/workflows/Keract%20CI/badge.svg)
 ```bash
 pip install keract
 ```
