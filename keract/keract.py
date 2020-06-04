@@ -165,6 +165,8 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
         return result_
 
     result = craft_output(output_format)
+    if layer_name is not None:  # extra check.
+        result = {k: v for k, v in result.items() if k == layer_name}
     if nodes_to_evaluate is not None and len(result) != len(nodes_to_evaluate):
         result = craft_output(output_format_='full')  # collision detected in the keys.
 
