@@ -149,7 +149,10 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
 
     # The placeholders are processed later (Inputs node in Keras). Due to a small bug in tensorflow.
     input_layer_outputs, layer_outputs = [], []
-    [input_layer_outputs.append(node) if 'input_' in node.name else layer_outputs.append(node) for node in nodes]
+    for node in nodes:
+        if not node.name.startswith('input_'):
+            layer_outputs.append(node)
+    input_layer_outputs = list(model.inputs)
     activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
 
     def craft_output(output_format_):
