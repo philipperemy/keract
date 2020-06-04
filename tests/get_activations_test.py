@@ -1,7 +1,7 @@
 import unittest
 
-import tensorflow.keras.backend as K
 import numpy as np
+import tensorflow.keras.backend as K
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense, concatenate
 
@@ -142,3 +142,24 @@ class GetActivationsTest(unittest.TestCase):
         b = grad_trainable_weights['fc1/bias:0']
         self.assertListEqual(list(w.shape), [10, 1])  # Dense.w
         self.assertListEqual(list(b.shape), [1, ])  # Dense.b
+
+    def test_inputs_order(self):
+        i10 = Input(shape=(10,), name='i1')
+        i40 = Input(shape=(40,), name='i4')
+        i30 = Input(shape=(30,), name='i3')
+        i20 = Input(shape=(20,), name='i2')
+
+        a = Dense(1, name='fc1')(concatenate([i10, i40, i30, i20], name='concat'))
+        model = Model(inputs=[i40, i30, i20, i10], outputs=[a])
+        x = [
+            np.random.uniform(size=(1, 40)),
+            np.random.uniform(size=(1, 30)),
+            np.random.uniform(size=(1, 20)),
+            np.random.uniform(size=(1, 10))
+        ]
+
+        acts = get_activations(model, x)
+        self.assertListEqual(list(acts['i1'].shape), [1, 10])
+        self.assertListEqual(list(acts['i2'].shape), [1, 20])
+        self.assertListEqual(list(acts['i3'].shape), [1, 30])
+        self.assertListEqual(list(acts['i4'].shape), [1, 40])

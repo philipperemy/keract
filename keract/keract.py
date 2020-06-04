@@ -152,7 +152,8 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
     for node in nodes:
         if not node.name.startswith('input_'):
             layer_outputs.append(node)
-    input_layer_outputs = list(model.inputs)
+    if nodes_to_evaluate is None:
+        input_layer_outputs = list(model.inputs)
     activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
 
     def craft_output(output_format_):
