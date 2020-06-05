@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.models import Sequential
@@ -7,6 +8,8 @@ import utils
 from data import MNIST
 
 if __name__ == '__main__':
+    # gradients requires no eager execution.
+    tf.compat.v1.disable_eager_execution()
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
     utils.gpu_dynamic_mem_growth()
