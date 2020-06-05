@@ -39,7 +39,10 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
                 raise Exception('Compilation of the model required.')
 
     def eval_fn(k_inputs):
-        return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
+        try:
+            return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
+        except AttributeError:  # one way to avoid forcing non eager mode.
+            return K.function(k_inputs, nodes_to_evaluate)((x, y))  # although works.
 
     try:
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
@@ -88,6 +91,10 @@ def _get_gradients(model, x, y, nodes, output_format):
     if model.optimizer is None:
         raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
     try:
+        if not hasattr(model, 'total_loss'):
+            raise Exception('Disable TF eager mode to use get_gradients.\n'
+                            'Add this command at the beginning of your script:\n'
+                            'tf.compat.v1.disable_eager_execution()')
         grads = model.optimizer.get_gradients(model.total_loss, nodes)
     except ValueError as e:
         if 'differentiable' in str(e):
@@ -150,15 +157,20 @@ def get_activations(model, x, layer_name=None, nodes_to_evaluate=None,
     # The placeholders are processed later (Inputs node in Keras). Due to a small bug in tensorflow.
     input_layer_outputs, layer_outputs = [], []
     for node in nodes:
-        if not node.name.startswith('input_'):
+        if node.op.type != 'Placeholder':  # no inputs please.
             layer_outputs.append(node)
-    if nodes_to_evaluate is None:
+    if nodes_to_evaluate is None or (layer_name is not None) and \
+            any([n.name.startswith(layer_name) for n in model.inputs]):
         input_layer_outputs = list(model.inputs)
-    activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
+    if len(layer_outputs) > 0:
+        activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
+    else:
+        activations = {}
 
     def craft_output(output_format_):
         activations_dict = OrderedDict(zip([n_(output, output_format_) for output in layer_outputs], activations))
-        activations_inputs_dict = OrderedDict(zip([n_(output, output_format_) for output in input_layer_outputs], x))
+        inputs = [x] if not isinstance(x, list) else x
+        activations_inputs_dict = OrderedDict(zip([n_(output, output_format_) for output in input_layer_outputs], inputs))
         result_ = activations_inputs_dict.copy()
         result_.update(activations_dict)
         if output_format_ == 'numbered':

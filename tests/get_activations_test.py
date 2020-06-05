@@ -1,11 +1,14 @@
 import unittest
 
 import numpy as np
+import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights
+
+tf.compat.v1.disable_eager_execution()
 
 
 def dummy_model_and_inputs(**kwargs):
@@ -98,7 +101,7 @@ class GetActivationsTest(unittest.TestCase):
             np.testing.assert_almost_equal(n, s)
 
         self.assertListEqual(list(simple.keys()), ['i1', 'fc1'])
-        self.assertListEqual(list(full.keys()), ['i1:0', 'fc1/Identity:0'])
+        self.assertListEqual(list(full.keys()), ['i1:0', 'fc1/BiasAdd:0'])
         self.assertListEqual(list(numbered.keys()), [0, 1])
 
     def test_compile_vgg16_model(self):

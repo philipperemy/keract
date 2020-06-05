@@ -2,10 +2,10 @@ from io import BytesIO
 
 import requests
 from PIL import Image
-from keras.applications.inception_v3 import InceptionV3
-from keras.applications.inception_v3 import decode_predictions
-from keras.applications.inception_v3 import preprocess_input
-from keras.preprocessing.image import img_to_array
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.applications.inception_v3 import decode_predictions
+from tensorflow.keras.applications.inception_v3 import preprocess_input
+from tensorflow.keras.preprocessing.image import img_to_array
 
 import keract
 
