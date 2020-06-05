@@ -34,4 +34,4 @@ if __name__ == "__main__":
                   metrics=['accuracy'])
     activations = keract.get_activations(model, image)
     first = activations.get('block1_conv1')
-    keract.display_activations(activations)
+    keract.display_activations(activations, save=True)
