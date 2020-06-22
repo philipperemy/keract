@@ -22,7 +22,7 @@ def get_single_inputs_model():
     return m_single
 
 
-if __name__ == '__main__':
+def main():
     np.random.seed(123)
     inp_a = np.random.uniform(size=(5, 10))
     inp_b = np.random.uniform(size=(5, 10))
@@ -40,9 +40,9 @@ if __name__ == '__main__':
     utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c))
 
     # Just get the last layer!
-    utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b], layer_name='last_layer'))
+    utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b], layer_names='last_layer'))
     utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c,
-                                                                     layer_name='last_layer'))
+                                                                     layer_names='last_layer'))
     print('')
 
     print('SINGLE-INPUT MODEL')
@@ -51,3 +51,7 @@ if __name__ == '__main__':
     utils.print_names_and_values(keract.get_activations(m2, inp_a))
     utils.print_names_and_values(keract.get_gradients_of_trainable_weights(m2, inp_a, out_c))
     utils.print_names_and_values(keract.get_gradients_of_activations(m2, inp_a, out_c))
+
+
+if __name__ == '__main__':
+    main()
