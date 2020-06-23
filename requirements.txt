@@ -1,4 +1,3 @@
-numpy>=1.16.2
+numpy>=1.16.5
 h5py
 matplotlib
-tensorflow<=2.1.0

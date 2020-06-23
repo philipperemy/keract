@@ -33,5 +33,5 @@ if __name__ == "__main__":
                   loss='categorical_crossentropy',
                   metrics=['accuracy'])
     activations = keract.get_activations(model, image)
-    first = activations.get('block1_conv1/Relu:0')
-    keract.display_activations(activations)
+    first = activations.get('block1_conv1')
+    keract.display_activations(activations, save=True)

@@ -2,10 +2,9 @@ import json
 import os
 from collections import OrderedDict
 
-import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Layer, InputLayer
+from tensorflow.keras.layers import Layer
 
 
 def n_(node, output_format_, nested=False):
@@ -46,7 +45,10 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
                 raise Exception('Compilation of the model required.')
 
     def eval_fn(k_inputs):
-        return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
+        try:
+            return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
+        except AttributeError:  # one way to avoid forcing non eager mode.
+            return K.function(k_inputs, nodes_to_evaluate)((x, y))  # although works.
 
     try:
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
@@ -112,9 +114,12 @@ def _get_gradients(model, x, y, nodes):
 
     nodes_names = nodes.keys()
     nodes_values = nodes.values()
-    # nodes_values = [n.output for n in nodes.values()]
 
     try:
+        if not hasattr(model, 'total_loss'):
+            raise Exception('Disable TF eager mode to use get_gradients.\n'
+                            'Add this command at the beginning of your script:\n'
+                            'tf.compat.v1.disable_eager_execution()')
         grads = model.optimizer.get_gradients(model.total_loss, nodes_values)
     except ValueError as e:
         if 'differentiable' in str(e):
@@ -136,23 +141,22 @@ def _get_gradients(model, x, y, nodes):
     return OrderedDict(zip(nodes_names, gradients_values))
 
 
-def _get_nodes(module, output_format, nested=False, layer_names=[], prefix=''):
+def _get_nodes(module, output_format, nested=False, layer_names=[]):
     is_model_or_layer = isinstance(module, Model) or isinstance(module, Layer)
     has_layers = hasattr(module, '_layers') and bool(module._layers)
     assert is_model_or_layer, 'Not a model or layer!'
 
-    if bool(layer_names) and prefix in layer_names:
-        return OrderedDict({prefix: module.output})
+    module_name = n_(module.output, output_format_=output_format, nested=nested)
 
-    elif has_layers:
+    if has_layers:
         node_dict = OrderedDict()
+        print('Layers:', module._layers)
         for m in module._layers:
             key = n_(m.output, output_format_=output_format, nested=nested)
             if nested:
                 nodes = _get_nodes(m, output_format,
                                    nested=nested,
-                                   layer_names=layer_names,
-                                   prefix=key)
+                                   layer_names=layer_names)
             else:
                 if bool(layer_names) and key in layer_names:
                     nodes = OrderedDict([(key, m.output)])
@@ -163,10 +167,16 @@ def _get_nodes(module, output_format, nested=False, layer_names=[], prefix=''):
             node_dict.update(nodes)
         return node_dict
 
+    elif bool(layer_names) and module_name in layer_names:
+        print("1", module_name, module)
+        return OrderedDict({module_name: module.output})
+
     elif not bool(layer_names):
-        return OrderedDict({prefix: module.output})
+        print("2", module_name, module)
+        return OrderedDict({module_name: module.output})
 
     else:
+        print("3", module_name, module)
         return OrderedDict()
 
 
@@ -212,7 +222,7 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
     layer_names = [layer_names] if isinstance(layer_names, str) else layer_names
-
+    print('Layer names:', layer_names)
     if nodes_to_evaluate is None:
         nodes = _get_nodes(model, output_format, layer_names=layer_names, nested=nested)
     else:
@@ -229,21 +239,35 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
             raise ValueError('Nodes list is empty. Or maybe the model is empty.')
 
     # The placeholders are processed later (Inputs node in Keras). Due to a small bug in tensorflow.
-    layer_outputs = nodes.values()
-    activations = _evaluate(model, layer_outputs, x, y=None, auto_compile=auto_compile)
+    input_layer_outputs = []
+    layer_outputs = OrderedDict()
+
+    for key, node in nodes.items():
+        if node.op.type != 'Placeholder':  # no inputs please.
+            layer_outputs.update({key: node})
+    if nodes_to_evaluate is None or (layer_names is not None) and \
+            any([n.name in layer_names for n in model.inputs]):
+        input_layer_outputs = list(model.inputs)
+
+    if len(layer_outputs) > 0:
+        activations = _evaluate(model, layer_outputs.values(), x, y=None, auto_compile=auto_compile)
+    else:
+        activations = {}
 
     def craft_output(output_format_):
-        input_activations, output_activations = OrderedDict(), OrderedDict()
-        [input_activations.update({key: output}) if _is_input(node, key) else output_activations.update({key: output})
-            for key, node, output in zip(nodes.keys(), nodes.values(), activations)]
+        inputs = [x] if not isinstance(x, list) else x
+        activations_inputs_dict = OrderedDict(zip([n_(output, output_format_) for output in input_layer_outputs], inputs))
+        activations_dict = OrderedDict(zip(layer_outputs.keys(), activations))
+        result_ = activations_inputs_dict.copy()
+        result_.update(activations_dict)
 
-        result_ = input_activations.copy()
-        result_.update(output_activations)
         if output_format_ == 'numbered':
             result_ = OrderedDict([(i, v) for i, (k, v) in enumerate(result_.items())])
         return result_
 
     result = craft_output(output_format)
+    if layer_names is not None:  # extra check.
+        result = {k: v for k, v in result.items() if k in layer_names}
     if nodes_to_evaluate is not None and len(result) != len(nodes_to_evaluate):
         result = craft_output(output_format_='full')  # collision detected in the keys.
 

@@ -1,11 +1,14 @@
 import unittest
 
-import tensorflow.keras.backend as K
 import numpy as np
+import tensorflow as tf
+import tensorflow.keras.backend as K
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense, ReLU, Layer, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights
+
+tf.compat.v1.disable_eager_execution()
 
 
 def dummy_model_and_inputs(**kwargs):
@@ -36,6 +39,7 @@ class NestedLayer(Layer):
 
     def call(self, x):
         return self.relu(self.fc(x))
+
 
 class GetActivationsTest(unittest.TestCase):
 
@@ -89,7 +93,8 @@ class GetActivationsTest(unittest.TestCase):
         # not really activations here, just weight values. It's to show how to use it.
         weights_values = get_activations(model, x, nodes_to_evaluate=[z, w, b])
 
-        zv = weights_values['block/Identity:0']
+        print("Weights valuese:", weights_values)
+        zv = weights_values['block/relu/Relu:0']
         wv = weights_values['fc1/kernel:0']
         bv = weights_values['fc1/bias:0']
 
@@ -141,13 +146,13 @@ class GetActivationsTest(unittest.TestCase):
                                                           'block/fc1',
                                                           'block/relu',
                                                           'fc1'])
-        self.assertListEqual(list(full.keys()), ['i1:0', 'model/Identity:0', 'block/Identity:0', 'fc1/Identity:0'])
+        self.assertListEqual(list(full.keys()), ['i1:0', 'model/relu/Relu:0', 'block/relu/Relu:0', 'fc1/BiasAdd:0'])
         self.assertListEqual(list(full_nested.keys()), ['i1:0',
-                                                        'model/fc1/Identity:0',
-                                                        'model/relu/Identity:0',
-                                                        'block/fc1/Identity:0',
-                                                        'block/relu/Identity:0',
-                                                        'fc1/Identity:0'])
+                                                        'model/fc1/BiasAdd:0',
+                                                        'model/relu/Relu:0',
+                                                        'block/fc1/BiasAdd:0',
+                                                        'block/relu/Relu:0',
+                                                        'fc1/BiasAdd:0'])
         self.assertListEqual(list(numbered.keys()), [0, 1, 2, 3])
 
     def test_compile_vgg16_model(self):
@@ -213,3 +218,24 @@ class GetActivationsTest(unittest.TestCase):
         self.assertListEqual(list(b1.shape), [10, ])  # Dense.w
         self.assertListEqual(list(w2.shape), [10, 1])  # Dense.w
         self.assertListEqual(list(b2.shape), [1, ])  # Dense.b
+
+    def test_inputs_order(self):
+        i10 = Input(shape=(10,), name='i1')
+        i40 = Input(shape=(40,), name='i4')
+        i30 = Input(shape=(30,), name='i3')
+        i20 = Input(shape=(20,), name='i2')
+
+        a = Dense(1, name='fc1')(concatenate([i10, i40, i30, i20], name='concat'))
+        model = Model(inputs=[i40, i30, i20, i10], outputs=[a])
+        x = [
+            np.random.uniform(size=(1, 40)),
+            np.random.uniform(size=(1, 30)),
+            np.random.uniform(size=(1, 20)),
+            np.random.uniform(size=(1, 10))
+        ]
+
+        acts = get_activations(model, x)
+        self.assertListEqual(list(acts['i1'].shape), [1, 10])
+        self.assertListEqual(list(acts['i2'].shape), [1, 20])
+        self.assertListEqual(list(acts['i3'].shape), [1, 30])
+        self.assertListEqual(list(acts['i4'].shape), [1, 40])

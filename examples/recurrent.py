@@ -1,4 +1,4 @@
-import tensorflow.keras as keras
+import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.models import Sequential
@@ -8,6 +8,8 @@ import utils
 from data import MNIST
 
 if __name__ == '__main__':
+    # gradients requires no eager execution.
+    tf.compat.v1.disable_eager_execution()
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
     utils.gpu_dynamic_mem_growth()
@@ -22,8 +24,8 @@ if __name__ == '__main__':
     model.add(LSTM(16, input_shape=(28, 28)))
     model.add(Dense(MNIST.num_classes, activation='softmax'))
 
-    model.compile(loss=keras.losses.categorical_crossentropy,
-                  optimizer=keras.optimizers.Adadelta(),
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
                   metrics=['accuracy'])
 
     utils.print_names_and_shapes(keract.get_activations(model, x_train[:128]))
