@@ -150,7 +150,7 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
 
     if has_layers:
         node_dict = OrderedDict()
-        print('Layers:', module._layers)
+        # print('Layers:', module._layers)
         for m in module._layers:
             key = n_(m.output, output_format_=output_format, nested=nested)
             if nested:
@@ -222,7 +222,7 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
     layer_names = [layer_names] if isinstance(layer_names, str) else layer_names
-    print('Layer names:', layer_names)
+    # print('Layer names:', layer_names)
     if nodes_to_evaluate is None:
         nodes = _get_nodes(model, output_format, layer_names=layer_names, nested=nested)
     else:
