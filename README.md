@@ -25,7 +25,7 @@ pip install keract
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
 ```python
-keract.get_activations(model, x, layer_name=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
+keract.get_activations(model, x, layer_names=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
 ```
 
 Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
@@ -34,7 +34,8 @@ By default, all the activations for all the layers are returned.
 - `model`: Keras compiled model or one of ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2',
     'mobilenet_v2', 'mobilenetv2', ...].
 - `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
-- `layer_name`: (optional) Name of a layer for which activations should be returned.
+- `layer_names`: (optional) Single name of a layer or list of layer names for which activations should be
+    returned. It is useful in very big networks when it is computationally expensive to evaluate all the layers/nodes.
 - `nodes_to_evaluate`: (optional) List of Keras nodes to be evaluated.
 - `output_format`: Change the output dictionary key of the function.
    - `simple`: output key will match the names of the Keras layers. For example Dense(1, name='d1') will
