@@ -3,8 +3,8 @@ import os
 from collections import OrderedDict
 
 import tensorflow.keras.backend as K
-from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Layer
+from tensorflow.keras.models import Model
 
 
 def n_(node, output_format_, nested=False):
@@ -256,7 +256,8 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
 
     def craft_output(output_format_):
         inputs = [x] if not isinstance(x, list) else x
-        activations_inputs_dict = OrderedDict(zip([n_(output, output_format_) for output in input_layer_outputs], inputs))
+        activations_inputs_dict = OrderedDict(
+            zip([n_(output, output_format_) for output in input_layer_outputs], inputs))
         activations_dict = OrderedDict(zip(layer_outputs.keys(), activations))
         result_ = activations_inputs_dict.copy()
         result_.update(activations_dict)
@@ -274,12 +275,14 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     return result
 
 
-def display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last'):
+def display_activations(activations, cmap=None, save=False, directory='.',
+                        data_format='channels_last', fig_size=(24, 24)):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict - mapping layers to corresponding activations (1, output_h, output_w, num_filters)
     :param cmap: string - a valid matplotlib colormap to be used
     :param save: bool - if the plot should be saved
+    :param fig_size: (float, float), optional, default: None. width, height in inches.
     :param directory: string - where to store the activations (if save is True)
     :param data_format: string - one of "channels_last" (default) or "channels_first".
     The ordering of the dimensions in the inputs. "channels_last" corresponds to inputs with
@@ -314,12 +317,12 @@ def display_activations(activations, cmap=None, save=False, directory='.', data_
             continue
             """
             # no channel
-            fig, axes = plt.subplots(1, 1, squeeze=False, figsize=(24, 24))
+            fig, axes = plt.subplots(1, 1, squeeze=False, figsize=fig_size)
             img = acts[0, :]
             hmap = axes.flat[0].imshow([img], cmap=cmap)
             axes.flat[0].axis('off')
         else:
-            fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=(24, 24))
+            fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=fig_size)
             for i in range(nrows * ncols):
                 if i < acts.shape[c]:
                     if len(acts.shape) == 3:
