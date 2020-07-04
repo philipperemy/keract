@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='keract',
-    version='4.1.0',
+    version='4.1.1',
     description='Keract - Tensorflow Keras Activations and Gradients',
     author='Philippe Remy',
     license='MIT',
