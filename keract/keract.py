@@ -440,11 +440,17 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                 # resizes the activation to be same dimensions of input_image
                 img = img.resize((input_image.shape[1], input_image.shape[0]), Image.LANCZOS)
                 img = np.array(img)
-                axes.flat[i].imshow(input_image / 255.0)
-                # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
-                # Lowest activations are dark, highest are dark red, mid are yellow
-                axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
-            axes.flat[i].axis('off')
+                if hasattr(axes, 'flat'):
+                    axes.flat[i].imshow(input_image / 255.0)
+                    # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
+                    # Lowest activations are dark, highest are dark red, mid are yellow
+                    axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
+                else:
+                    axes.imshow(input_image / 255.0)
+                    axes.imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
+            # axis off.
+            axes.flat[i].axis('off') if hasattr(axes, 'flat') else axes.axis('off')
+
         if save:
             if not os.path.exists(directory):
                 os.makedirs(directory)
