@@ -51,8 +51,8 @@ Returns: Dict {layer_name (specified by output_format) -> activation of the laye
 
 ```python
 import numpy as np
-from keras import Input, Model
-from keras.layers import Dense, concatenate
+from tensorflow.keras import Input, Model
+from tensorflow.keras.layers import Dense, concatenate
 from keract import get_activations
 
 # model definition
