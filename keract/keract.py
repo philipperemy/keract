@@ -72,6 +72,8 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
         try:
             return K.function(k_inputs, nodes_to_evaluate)(model._standardize_user_data(x, y))
         except AttributeError:  # one way to avoid forcing non eager mode.
+            if y is None: # tf 2.3.0 upgrade compatibility.
+                return K.function(k_inputs, nodes_to_evaluate)(x)
             return K.function(k_inputs, nodes_to_evaluate)((x, y))  # although works.
 
     try:
@@ -548,3 +550,4 @@ def load_activations_from_json_file(filename):
         d = json.load(r, object_pairs_hook=OrderedDict)
         activations = OrderedDict({k: np.array(v) for k, v in d.items()})
         return activations
+
