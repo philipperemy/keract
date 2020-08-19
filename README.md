@@ -1,16 +1,20 @@
 # Keract: Keras Activations + Gradients
 
+
 [![Downloads](https://pepy.tech/badge/keract)](https://pepy.tech/project/keract)
 [![Downloads](https://pepy.tech/badge/keract/month)](https://pepy.tech/project/keract)
 ![Keract CI](https://github.com/philipperemy/keract/workflows/Keract%20CI/badge.svg)
 ```bash
 pip install keract
 ```
-*You have just found a (easy) way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
+
+*You have just found a way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
 
 <p align="center">
   <img src="assets/intro.png">
 </p>
+
+Compatible with latest tensorflow 2.3.
 
 ## API
 
