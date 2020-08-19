@@ -550,4 +550,3 @@ def load_activations_from_json_file(filename):
         d = json.load(r, object_pairs_hook=OrderedDict)
         activations = OrderedDict({k: np.array(v) for k, v in d.items()})
         return activations
-
