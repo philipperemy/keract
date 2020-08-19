@@ -172,22 +172,34 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
     has_layers = hasattr(module, '_layers') and bool(module._layers)
     assert is_model_or_layer, 'Not a model or layer!'
 
-    module_name = n_(module.output, output_format_=output_format, nested=nested)
+    def output(u):
+        try:
+            return u.output
+        except:
+            return u.outbound_nodes[0].outputs
+
+    try:
+        module_name = n_(module.output, output_format_=output_format, nested=nested)
+    except AttributeError:  # for example Sequential. After tf2.3.
+        module_name = module.name
 
     if has_layers:
         node_dict = OrderedDict()
         # print('Layers:', module._layers)
         for m in module._layers:
-            key = n_(m.output, output_format_=output_format, nested=nested)
+            try:
+                key = n_(m.output, output_format_=output_format, nested=nested)
+            except AttributeError:  # for example Sequential. After tf2.3.
+                key = m.name
             if nested:
                 nodes = _get_nodes(m, output_format,
                                    nested=nested,
                                    layer_names=layer_names)
             else:
                 if bool(layer_names) and key in layer_names:
-                    nodes = OrderedDict([(key, m.output)])
+                    nodes = OrderedDict([(key, output(m))])
                 elif not bool(layer_names):
-                    nodes = OrderedDict([(key, m.output)])
+                    nodes = OrderedDict([(key, output(m))])
                 else:
                     nodes = OrderedDict()
             node_dict.update(nodes)

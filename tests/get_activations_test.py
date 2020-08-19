@@ -306,3 +306,6 @@ class GetActivationsTest(unittest.TestCase):
         acts_nested = keract.get_activations(nested_model, inputs, nested=True)
         self.assertTrue('subnet' not in acts_nested)
         self.assertTrue('subnet/conv2d' in acts_nested)
+        self.assertTrue('subnet/max_pooling2d' in acts_nested)
+        self.assertTrue('subnet/conv2d_1' in acts_nested)
+        self.assertTrue('subnet/max_pooling2d_1' in acts_nested)
