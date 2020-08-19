@@ -88,7 +88,7 @@ activations = get_activations(model, x, auto_compile=True)
 ### Display the activations you've obtained
 
 ```python
-keract.display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last')
+keract.display_activations(activations, cmap=None, save=False, directory='.', data_format='channels_last', fig_size=(24, 24), reshape_1d_layers=False)
 ```
 
 Plot the activations for each layer using matplotlib
@@ -99,6 +99,8 @@ Inputs are:
 - `save`(optional) a bool, if True the images of the activations are saved rather than being shown
 - `directory`: (optional) string - where to store the activations (if save is True)
 - `data_format`: (optional) tring - one of "channels_last" (default) or "channels_first".
+- `reshape_1d_layers`: (optional) bool - tries to reshape large 1d layers to a square/rectangle.
+- `fig_size`: (optional) (float, float) - width, height in inches.
 
 The ordering of the dimensions in the inputs. "channels_last" corresponds to inputs with shape (batch, steps, channels) (default format for temporal data in Keras) while "channels_first" corresponds to inputs with shape (batch, channels, steps).
 

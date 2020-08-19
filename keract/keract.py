@@ -2,9 +2,30 @@ import json
 import os
 from collections import OrderedDict
 
+import numpy as np
 import tensorflow.keras.backend as K
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
+
+
+def _convert_1d_to_2d(num_units: int):
+    # find divisors of num_units.
+    divisors = []
+    for i in range(1, num_units + 1):
+        q = num_units / i
+        if int(q) == q:
+            divisors.append(i)
+    divisors = list(reversed(divisors))
+    pairs = []
+    for d in divisors:
+        for e in divisors[1:]:
+            if d * e == num_units:
+                pairs.append((d, e))
+    if len(pairs) == 0:
+        return num_units, 1
+    # square x*y == rectangle x*y but minimizes x+y.
+    close_to_square_id = int(np.argmin(np.sum(np.array(pairs), axis=1)))
+    return pairs[close_to_square_id]
 
 
 def n_(node, output_format_, nested=False):
@@ -183,10 +204,6 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
         return OrderedDict()
 
 
-def _is_input(layer, key):
-    return 'input' in key
-
-
 def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
                     output_format='simple', nested=False, auto_compile=True):
     """
@@ -279,7 +296,8 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
 
 
 def display_activations(activations, cmap=None, save=False, directory='.',
-                        data_format='channels_last', fig_size=(24, 24)):
+                        data_format='channels_last', fig_size=(24, 24),
+                        reshape_1d_layers=False):
     """
     Plot the activations for each layer using matplotlib
     :param activations: dict - mapping layers to corresponding activations (1, output_h, output_w, num_filters)
@@ -288,6 +306,7 @@ def display_activations(activations, cmap=None, save=False, directory='.',
     :param fig_size: (float, float), optional, default: None. width, height in inches.
     :param directory: string - where to store the activations (if save is True)
     :param data_format: string - one of "channels_last" (default) or "channels_first".
+    :param reshape_1d_layers: tries to reshape large 1d layers to a square/rectangle.
     The ordering of the dimensions in the inputs. "channels_last" corresponds to inputs with
     shape (batch, steps, channels) (default format for temporal data in Keras) while "channels_first"
     corresponds to inputs with shape (batch, channels, steps).
@@ -322,7 +341,8 @@ def display_activations(activations, cmap=None, save=False, directory='.',
             # no channel
             fig, axes = plt.subplots(1, 1, squeeze=False, figsize=fig_size)
             img = acts[0, :]
-            hmap = axes.flat[0].imshow([img], cmap=cmap)
+            img2 = np.reshape(img, _convert_1d_to_2d(img.shape[0])) if reshape_1d_layers else [img]
+            hmap = axes.flat[0].imshow(img2, cmap=cmap)
             axes.flat[0].axis('off')
         else:
             fig, axes = plt.subplots(nrows, ncols, squeeze=False, figsize=fig_size)
