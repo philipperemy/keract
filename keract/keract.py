@@ -205,7 +205,7 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     - 'full': output key will match the full name of the output layer name. In the example above, it will
     return {'d1/BiasAdd:0': ...}.
     - 'numbered': output key will be an index range, based on the order of definition of each layer within the model.
-    - 'nested': If specified, will move recursively through the model definition to retrieve nested layers.
+    :param nested: If specified, will move recursively through the model definition to retrieve nested layers.
                 Recursion ends at leaf layers of the model tree or at layers with their name specified in layer_names.
 
                 E.g., a model with the following structure
