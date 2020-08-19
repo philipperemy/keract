@@ -25,7 +25,7 @@ pip install keract
 ### Get activations (nodes/layers outputs as Numpy arrays)
 
 ```python
-keract.get_activations(model, x, layer_names=None, nodes_to_evaluate=None, output_format='simple', auto_compile=True)
+get_activations(model, x, layer_names=None, nodes_to_evaluate=None, output_format='simple', nested=False, auto_compile=True)
 ```
 
 Fetch activations (nodes/layers outputs as Numpy arrays) for a Keras model and an input X.
@@ -43,6 +43,7 @@ By default, all the activations for all the layers are returned.
    - `full`: output key will match the full name of the output layer name. In the example above, it will
     return {'d1/BiasAdd:0': ...}.
    - `numbered`: output key will be an index range, based on the order of definition of each layer within the model.
+- `nested`: If specified, will move recursively through the model definition to retrieve nested layers. Recursion ends at leaf layers of the model tree or at layers with their name specified in `layer_names`. For example a Sequential model in another Sequential model is considered nested.
 - `auto_compile`: If set to True, will auto-compile the model if needed.
 
 Returns: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
