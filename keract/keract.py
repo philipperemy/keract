@@ -175,7 +175,7 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
     def output(u):
         try:
             return u.output
-        except:
+        except AttributeError:  # for example Sequential. After tf2.3.
             return u.outbound_nodes[0].outputs
 
     try:
