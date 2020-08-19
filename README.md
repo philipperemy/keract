@@ -14,7 +14,7 @@ pip install keract
   <img src="assets/intro.png">
 </p>
 
-Compatible with latest tensorflow 2.3.
+Compatible with latest tensorflow 2.3 (from 4.3.0).
 
 ## API
 
