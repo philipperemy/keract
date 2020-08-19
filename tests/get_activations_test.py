@@ -3,6 +3,7 @@ import unittest
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
+from tensorflow import keras
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Add, Dense, Input
 from tensorflow.keras.layers import ReLU, Layer, concatenate
@@ -10,6 +11,29 @@ from tensorflow.keras.layers import ReLU, Layer, concatenate
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
 tf.compat.v1.disable_eager_execution()
+
+
+def create_network_with_one_subnet():
+    # FROM https://stackoverflow.com/questions/54648296/how-to-flatten-a-nested-model-keras-functional-api/54648506
+    # define subnetwork
+    subnet = keras.models.Sequential(name='subnet')
+    subnet.add(keras.layers.Conv2D(6, (3, 3), padding='same'))
+    subnet.add(keras.layers.MaxPool2D())
+    subnet.add(keras.layers.Conv2D(12, (3, 3), padding='same'))
+    subnet.add(keras.layers.MaxPool2D())
+    # subnet.summary()
+
+    # define complete network
+    input_shape = (32, 32, 1)
+    net_in = keras.layers.Input(shape=input_shape)
+    net_out = subnet(net_in)
+    net_out = keras.layers.Flatten()(net_out)
+    net_out = keras.layers.Dense(1)(net_out)
+    net_complete = keras.Model(inputs=net_in, outputs=net_out)
+    net_complete.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(lr=0.001), metrics=['acc'])
+    net_complete.summary()
+    # plot_model(net_complete)
+    return net_complete
 
 
 def dummy_model_and_inputs(**kwargs):
@@ -267,3 +291,18 @@ class GetActivationsTest(unittest.TestCase):
         self.assertListEqual(list(acts['add'].shape), [5, 10])
         self.assertListEqual(list(acts['o1'].shape), [5, 1])
         self.assertListEqual(list(acts['o2'].shape), [5, 2])
+
+    def test_model_in_model(self):
+        np.random.seed(123)
+        inputs = np.random.uniform(size=(8, 32, 32, 1))
+        nested_model = create_network_with_one_subnet()
+
+        # will get the activations of every layer, EXCLUDING subnet layers.
+        acts_not_nested = keract.get_activations(nested_model, inputs)
+        self.assertTrue('subnet' in acts_not_nested)
+        self.assertTrue('subnet/conv2d' not in acts_not_nested)
+
+        # will get the activations of every layer, including subnet.
+        acts_nested = keract.get_activations(nested_model, inputs, nested=True)
+        self.assertTrue('subnet' not in acts_nested)
+        self.assertTrue('subnet/conv2d' in acts_nested)
