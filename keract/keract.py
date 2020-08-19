@@ -8,7 +8,10 @@ from tensorflow.keras.models import Model
 
 
 def n_(node, output_format_, nested=False):
-    node_name = str(node.name)
+    if isinstance(node, list):
+        node_name = '_'.join([str(n.name) for n in node])
+    else:
+        node_name = str(node.name)
     if output_format_ == 'simple':
         if '/' in node_name:
             # This ensures that subnodes get properly named.

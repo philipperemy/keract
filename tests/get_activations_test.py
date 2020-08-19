@@ -3,10 +3,11 @@ import unittest
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
-from tensorflow.keras import Input, Model
-from tensorflow.keras.layers import Dense, ReLU, Layer, concatenate
+from tensorflow.keras import Model
+from tensorflow.keras.layers import Add, Dense, Input
+from tensorflow.keras.layers import ReLU, Layer, concatenate
 
-from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights
+from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
 tf.compat.v1.disable_eager_execution()
 
@@ -19,6 +20,17 @@ def dummy_model_and_inputs(**kwargs):
     model = Model(inputs=[i1], outputs=[c], **kwargs)
     x = np.random.uniform(size=(32, 10))
     return model, x
+
+
+def get_multi_outputs_model():
+    a = Input(shape=(10,), name='i1')
+    b = Input(shape=(10,), name='i2')
+    c = Add(name='add')([a, b])
+    d = Dense(1, activation='sigmoid', name='o1')(c)
+    e = Dense(2, activation='sigmoid', name='o2')(c)
+    m_multi = Model(inputs=[a, b], outputs=[d, e])
+    # plot_model(m_multi)
+    return m_multi
 
 
 class NestedModel(Model):
@@ -239,3 +251,19 @@ class GetActivationsTest(unittest.TestCase):
         self.assertListEqual(list(acts['i2'].shape), [1, 20])
         self.assertListEqual(list(acts['i3'].shape), [1, 30])
         self.assertListEqual(list(acts['i4'].shape), [1, 40])
+
+    def test_multi_inputs_multi_outputs(self):
+        inp_a = np.random.uniform(size=(5, 10))
+        inp_b = np.random.uniform(size=(5, 10))
+        # out_d = np.random.uniform(size=(5, 1))
+        # out_e = np.random.uniform(size=(5, 1))
+
+        m1 = get_multi_outputs_model()
+        m1.compile(optimizer='adam', loss='mse')
+        # m1.fit(x=[inp_a, inp_b], y=[out_d, out_e])
+        acts = keract.get_activations(m1, [inp_a, inp_b])
+        self.assertListEqual(list(acts['i1'].shape), [5, 10])
+        self.assertListEqual(list(acts['i2'].shape), [5, 10])
+        self.assertListEqual(list(acts['add'].shape), [5, 10])
+        self.assertListEqual(list(acts['o1'].shape), [5, 1])
+        self.assertListEqual(list(acts['o2'].shape), [5, 2])
