@@ -8,6 +8,7 @@ from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense
 
 from keract import get_activations, display_activations
+from keract.keract import _convert_1d_to_2d
 
 
 def dummy_model_and_inputs():
@@ -36,3 +37,8 @@ class DisplayActivationsTest(unittest.TestCase):
     def test_display_2(self):
         acts = {'1_channel': np.random.uniform(size=(1, 32, 32, 1))}
         display_activations(acts, save=True)
+
+    def test_convert_1d_to_2d(self):
+        self.assertEqual(_convert_1d_to_2d(64), (8, 8))
+        self.assertEqual(_convert_1d_to_2d(32), (8, 4))
+        self.assertEqual(_convert_1d_to_2d(32 * 33), (33, 32))
