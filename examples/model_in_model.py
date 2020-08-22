@@ -4,8 +4,6 @@ from tensorflow import keras
 from tensorflow.keras.utils import plot_model
 
 import keract
-
-# gradients requires no eager execution.
 import utils
 
 tf.compat.v1.disable_eager_execution()
