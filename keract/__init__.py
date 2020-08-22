@@ -14,4 +14,4 @@ from keract.keract import get_gradients_of_trainable_weights  # noqa
 from keract.keract import load_activations_from_json_file  # noqa
 from keract.keract import persist_to_json_file  # noqa
 
-__version__ = '4.3.0'
+__version__ = '4.3.1'
