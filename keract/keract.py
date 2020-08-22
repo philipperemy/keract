@@ -50,7 +50,22 @@ def n_(node, output_format_, nested=False):
 
 def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
     if not model._is_compiled:
-        if model.name in ['vgg16', 'vgg19', 'inception_v3', 'inception_resnet_v2', 'mobilenet_v2', 'mobilenetv2']:
+        # tensorflow.python.keras.applications.*
+        applications_model_names = [
+            'densenet',
+            'efficientnet',
+            'inception_resnet_v2',
+            'inception_v3',
+            'mobilenet',
+            'mobilenet_v2',
+            'nasnet',
+            'resnet',
+            'resnet_v2',
+            'vgg16',
+            'vgg19',
+            'xception'
+        ]
+        if model.name in applications_model_names:
             print('Transfer learning detected. Model will be compiled with ("categorical_crossentropy", "adam").')
             print('If you want to change the default behaviour, then do in python:')
             print('model.name = ""')
@@ -75,6 +90,11 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
             if y is None:  # tf 2.3.0 upgrade compatibility.
                 return K.function(k_inputs, nodes_to_evaluate)(x)
             return K.function(k_inputs, nodes_to_evaluate)((x, y))  # although works.
+        except ValueError as e:
+            print('Run it without eager mode. Paste those commands at the beginning of your script:')
+            print('> import tensorflow as tf')
+            print('> tf.compat.v1.disable_eager_execution()')
+            raise e
 
     try:
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
@@ -112,7 +132,7 @@ def get_gradients_of_activations(model, x, y, layer_names=None, output_format='s
     - 'full': output key will match the full name of the output layer name. In the example above, it will
     return {'d1/BiasAdd:0': ...}.
     - 'numbered': output key will be an index range, based on the order of definition of each layer within the model.
-    - 'nested': If specified, will move recursively through the model definition to retrieve nested layers.
+    :param nested: (optional) If set, will move recursively through the model definition to retrieve nested layers.
                 Recursion ends at leaf layers of the model tree or at layers with their name specified in layer_names.
 
                 E.g., a model with the following structure
@@ -158,7 +178,7 @@ def _get_gradients(model, x, y, nodes):
                     differentiable_nodes.append(n)
                 except ValueError:
                     pass
-            nodes_values = differentiable_nodes
+            # nodes_values = differentiable_nodes
         else:
             raise e
 
@@ -206,15 +226,15 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
         return node_dict
 
     elif bool(layer_names) and module_name in layer_names:
-        print("1", module_name, module)
+        # print("1", module_name, module)
         return OrderedDict({module_name: module.output})
 
     elif not bool(layer_names):
-        print("2", module_name, module)
+        # print("2", module_name, module)
         return OrderedDict({module_name: module.output})
 
     else:
-        print("3", module_name, module)
+        # print("3", module_name, module)
         return OrderedDict()
 
 
@@ -409,7 +429,6 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
     from PIL import Image
     import matplotlib.pyplot as plt
     from sklearn.preprocessing import MinMaxScaler
-    import numpy as np
     import math
 
     data_format = K.image_data_format()
@@ -557,7 +576,6 @@ def load_activations_from_json_file(filename):
     :param filename: filename to read the activations from (JSON format)
     :return: activations (dict mapping layers)
     """
-    import numpy as np
     with open(filename, 'r') as r:
         d = json.load(r, object_pairs_hook=OrderedDict)
         activations = OrderedDict({k: np.array(v) for k, v in d.items()})
