@@ -297,8 +297,13 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     layer_outputs = OrderedDict()
 
     for key, node in nodes.items():
-        if node.op.type != 'Placeholder':  # no inputs please.
-            layer_outputs.update({key: node})
+        if isinstance(node, list):
+            for nod in node:
+                if nod.op.type != 'Placeholder':  # no inputs please.
+                    layer_outputs.update({key: node})
+        else:
+            if node.op.type != 'Placeholder':  # no inputs please.
+                layer_outputs.update({key: node})
     if nodes_to_evaluate is None or (layer_names is not None) and \
             any([n.name in layer_names for n in model.inputs]):
         input_layer_outputs = list(model.inputs)

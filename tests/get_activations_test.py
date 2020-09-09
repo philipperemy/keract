@@ -309,3 +309,24 @@ class GetActivationsTest(unittest.TestCase):
         self.assertTrue('subnet/max_pooling2d' in acts_nested)
         self.assertTrue('subnet/conv2d_1' in acts_nested)
         self.assertTrue('subnet/max_pooling2d_1' in acts_nested)
+
+    def test_get_activations_from_multi_outputs(self):
+        # define model
+        inputs = tf.keras.Input(shape=(None,), name='input')
+        emb = tf.keras.layers.Embedding(100, 4, name='embeddding')(inputs)
+        lstm = tf.keras.layers.LSTM(4, return_sequences=True, return_state=True, name='lstm')
+        lstm_outputs, state_h, state_c = lstm(emb)
+        outputs = tf.keras.layers.Dense(1, name='final_dense')(state_h)
+
+        model = tf.keras.Model(inputs, outputs)
+        model.summary()
+
+        # create example
+        x = np.ones(shape=(16, 10))
+
+        # get activations
+        act = keract.get_activations(model, x, layer_names='lstm')['lstm']
+        self.assertEqual(len(act), 3)
+        self.assertListEqual(list(act[0].shape), [16, 10, 4])
+        self.assertListEqual(list(act[1].shape), [16, 4])
+        self.assertListEqual(list(act[2].shape), [16, 4])
