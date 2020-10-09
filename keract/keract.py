@@ -5,6 +5,7 @@ from collections import OrderedDict
 import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
+from tensorflow import Tensor
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
 
@@ -101,7 +102,16 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
     except Exception:
         if tf.executing_eagerly():
-            return [np.array(u) for u in [Model(model.inputs, n)(x) for n in list(nodes_to_evaluate)]]
+            acts = []
+            for n in list(nodes_to_evaluate):
+                if isinstance(n, list):
+                    acts.append([np.array(Model(model.inputs, nn)(x)) for nn in n])
+                else:
+                    if isinstance(n, Tensor):
+                        acts.append(np.array(Model(model.inputs, n)(x)))
+                    else:
+                        acts.append(n.numpy())
+            return acts
         return eval_fn(model._feed_inputs)
 
 
