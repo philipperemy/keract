@@ -11,7 +11,6 @@ from tensorflow.keras.layers import ReLU, Layer, concatenate
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
 
-
 def create_network_with_one_subnet():
     # FROM https://stackoverflow.com/questions/54648296/how-to-flatten-a-nested-model-keras-functional-api/54648506
     # define subnetwork
