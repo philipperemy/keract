@@ -4,6 +4,9 @@ from tensorflow.keras.models import Model
 
 import keract
 import utils
+import tensorflow as tf
+
+tf.compat.v1.disable_eager_execution()
 
 
 def get_multi_inputs_model():

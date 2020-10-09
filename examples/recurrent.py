@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.models import Sequential
@@ -5,6 +6,8 @@ from tensorflow.keras.models import Sequential
 import keract
 import utils
 from data import MNIST
+
+tf.compat.v1.disable_eager_execution()
 
 if __name__ == '__main__':
     # gradients requires no eager execution.
