@@ -10,7 +10,6 @@ from tensorflow.keras.layers import ReLU, Layer, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
-tf.compat.v1.disable_eager_execution()
 
 
 def create_network_with_one_subnet():

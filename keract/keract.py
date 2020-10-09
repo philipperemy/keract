@@ -3,6 +3,7 @@ import os
 from collections import OrderedDict
 
 import numpy as np
+import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
@@ -99,6 +100,12 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
     try:
         return eval_fn(model._feed_inputs + model._feed_targets + model._feed_sample_weights)
     except Exception:
+        if tf.executing_eagerly():
+            p = model(x)
+            if isinstance(p, list):
+                return [np.array(b) for b in p]
+            else:
+                return [np.array(p)]
         return eval_fn(model._feed_inputs)
 
 
@@ -162,11 +169,14 @@ def _get_gradients(model, x, y, nodes):
     nodes_values = nodes.values()
 
     try:
-        if not hasattr(model, 'total_loss'):
-            raise Exception('Disable TF eager mode to use get_gradients.\n'
-                            'Add this command at the beginning of your script:\n'
-                            'tf.compat.v1.disable_eager_execution()')
-        grads = model.optimizer.get_gradients(model.total_loss, nodes_values)
+        if tf.executing_eagerly():
+            with tf.GradientTape() as tape:
+                p = model(x)
+                loss_fn = tf.keras.losses.get(model.loss) if isinstance(model.loss, str) else model.loss
+                loss = loss_fn(p, y)
+            grads = tape.gradient(loss, model.trainable_variables)
+        else:
+            grads = model.optimizer.get_gradients(model.total_loss, nodes_values)
     except ValueError as e:
         if 'differentiable' in str(e):
             # Probably one of the gradients operations is not differentiable...

@@ -1,13 +1,10 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow.keras.layers import Add, Dense, Input
 from tensorflow.keras.models import Model
 
 import keract
 # gradients requires no eager execution.
 import utils
-
-tf.compat.v1.disable_eager_execution()
 
 
 def get_multi_outputs_model():

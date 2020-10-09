@@ -1,12 +1,9 @@
 import numpy as np
-import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import plot_model
 
 import keract
 import utils
-
-tf.compat.v1.disable_eager_execution()
 
 
 def create_network_with_one_subnet():

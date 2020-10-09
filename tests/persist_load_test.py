@@ -1,8 +1,8 @@
 import os
 import unittest
 
-import tensorflow.keras.backend as K
 import numpy as np
+import tensorflow.keras.backend as K
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dropout, Dense
 
