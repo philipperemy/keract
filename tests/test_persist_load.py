@@ -2,11 +2,14 @@ import os
 import unittest
 
 import numpy as np
+import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import Dropout, Dense
 
 from keract import get_activations, persist_to_json_file, load_activations_from_json_file
+
+tf.compat.v1.disable_eager_execution()
 
 
 class PersistLoadTest(unittest.TestCase):

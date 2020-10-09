@@ -8,7 +8,9 @@ from tensorflow.keras import Model
 from tensorflow.keras.layers import Add, Dense, Input
 from tensorflow.keras.layers import ReLU, Layer, concatenate
 
-from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
+from keract import get_activations, get_gradients_of_trainable_weights, keract
+
+tf.compat.v1.disable_eager_execution()
 
 
 def create_network_with_one_subnet():
@@ -296,7 +298,7 @@ class GetActivationsTest(unittest.TestCase):
         nested_model = create_network_with_one_subnet()
 
         # will get the activations of every layer, EXCLUDING subnet layers.
-        acts_not_nested = keract.get_activations(nested_model, inputs, nested=True)
+        acts_not_nested = keract.get_activations(nested_model, inputs)
         self.assertTrue('subnet' in acts_not_nested)
         self.assertTrue('subnet/conv2d' not in acts_not_nested)
 

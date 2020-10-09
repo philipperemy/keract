@@ -3,12 +3,15 @@ import unittest
 from glob import glob
 
 import numpy as np
+import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import Dense
 
 from keract import get_activations, display_activations
 from keract.keract import _convert_1d_to_2d
+
+tf.compat.v1.disable_eager_execution()
 
 
 def dummy_model_and_inputs():

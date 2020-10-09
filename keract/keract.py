@@ -8,6 +8,7 @@ import tensorflow.keras.backend as K
 from tensorflow import Tensor
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.models import Model
+from tensorflow.keras import Sequential
 
 
 def _convert_1d_to_2d(num_units: int):
@@ -299,6 +300,11 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     :param auto_compile: If set to True, will auto-compile the model if needed.
     :return: Dict {layer_name (specified by output_format) -> activation of the layer output/node (Numpy array)}.
     """
+    if tf.executing_eagerly() and any([isinstance(a, Sequential) for a in model.layers]):
+        print('Run it without eager mode. Paste those commands at the beginning of your script:')
+        print('> import tensorflow as tf')
+        print('> tf.compat.v1.disable_eager_execution()')
+        raise ValueError('Keract does not support eager mode and nested models (Sequential inside Sequential).')
     layer_names = [layer_names] if isinstance(layer_names, str) else layer_names
     # print('Layer names:', layer_names)
     if nodes_to_evaluate is None:
