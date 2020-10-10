@@ -14,7 +14,7 @@ pip install keract
   <img src="assets/intro.png">
 </p>
 
-Compatible with latest tensorflow 2.3 (from 4.3.0).
+Compatible with the latest tensorflow 2.3 (from 4.3.0) without the *eager mode* support. If you need it, you can try the preview build (unstable): `pip install keract-nightly`.
 
 ## API
 
