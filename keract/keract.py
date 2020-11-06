@@ -205,7 +205,7 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
 
     if has_layers:
         node_dict = OrderedDict()
-        for m in module.layers:
+        for m in module._layers:
             try:
                 if isinstance(m, dict) and len(m) == 0:
                     continue
