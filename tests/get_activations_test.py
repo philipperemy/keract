@@ -333,7 +333,6 @@ class GetActivationsTest(unittest.TestCase):
 
     def test_custom_loss(self):
         x = np.random.rand(100).reshape(100, 1)
-        y = x + 1
 
         inputs = tf.keras.layers.Input(shape=(1,))
         d = tf.keras.layers.Dense(11)(inputs)
