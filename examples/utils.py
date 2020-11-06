@@ -3,7 +3,10 @@ import tensorflow as tf
 
 def print_names_and_shapes(activations: dict):
     for layer_name, layer_activations in activations.items():
-        print(layer_name, layer_activations.shape)
+        if isinstance(layer_activations, float):
+            print(layer_name, '<float>')
+        else:
+            print(layer_name, layer_activations.shape)
     print('-' * 80)
 
 

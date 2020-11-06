@@ -205,9 +205,10 @@ def _get_nodes(module, output_format, nested=False, layer_names=[]):
 
     if has_layers:
         node_dict = OrderedDict()
-        # print('Layers:', module._layers)
-        for m in module._layers:
+        for m in module.layers:
             try:
+                if isinstance(m, dict) and len(m) == 0:
+                    continue
                 key = n_(m.output, output_format_=output_format, nested=nested)
             except AttributeError:  # for example Sequential. After tf2.3.
                 key = m.name
