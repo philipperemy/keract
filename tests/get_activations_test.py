@@ -330,3 +330,21 @@ class GetActivationsTest(unittest.TestCase):
         self.assertListEqual(list(act[0].shape), [16, 10, 4])
         self.assertListEqual(list(act[1].shape), [16, 4])
         self.assertListEqual(list(act[2].shape), [16, 4])
+
+    def test_custom_loss(self):
+        x = np.random.rand(100).reshape(100, 1)
+        y = x + 1
+
+        inputs = tf.keras.layers.Input(shape=(1,))
+        d = tf.keras.layers.Dense(11)(inputs)
+        d = tf.keras.layers.Dense(1)(d)
+
+        model = tf.keras.Model(inputs=inputs, outputs=d)
+
+        def loss(y_true, y_pred):
+            return tf.reduce_mean((y_true - y_pred) ** 2)
+
+        optimizer = tf.keras.optimizers.Adam()
+        model.add_loss(loss(inputs, d))
+        model.compile(optimizer)
+        keract.get_activations(model, x)
