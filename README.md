@@ -241,3 +241,16 @@ python heat_map.py
   <img src="assets/heatmap.png">
 </p>
 
+## Citation
+
+```
+@misc{Keract,
+  author = {Philippe Remy},
+  title = {Keract: A library for visualizing activations and gradients},
+  year = {2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/philipperemy/keract}},
+}
+```
+
