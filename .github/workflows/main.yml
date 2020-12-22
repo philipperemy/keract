@@ -24,15 +24,15 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --max-complexity 20 --max-line-length 127 --statistics    
-    - name: Install deps
+    - name: Install deps without tensorflow
       run: |
         pip install -r requirements.txt
         pip install -r examples/examples-requirements.txt
         pip install pytest
-        pip install tensorflow==2.4.0
         pip install -e .
-    - name: Test
+    - name: Run tests with tensorflow 2.2
       run: |
+        pip install tensorflow==2.2.0
         cd examples
         python recurrent.py
         python multi_inputs.py
@@ -41,4 +41,27 @@ jobs:
         python dump_activations_to_disk.py
         cd ..
         pytest tests --disable-pytest-warnings
+    - name: Run tests with tensorflow 2.3
+        run: |
+          pip install tensorflow==2.3.0
+          cd examples
+          python recurrent.py
+          python multi_inputs.py
+          python heat_map.py
+          python vgg16.py
+          python dump_activations_to_disk.py
+          cd ..
+          pytest tests --disable-pytest-warnings
+    - name: Run tests with tensorflow 2.4
+        run: |
+          pip install tensorflow==2.4.0
+          cd examples
+          python recurrent.py
+          python multi_inputs.py
+          python heat_map.py
+          python vgg16.py
+          python dump_activations_to_disk.py
+          cd ..
+          pytest tests --disable-pytest-warnings
+
 
