@@ -42,26 +42,26 @@ jobs:
         cd ..
         pytest tests --disable-pytest-warnings
     - name: Run tests with tensorflow 2.3
-        run: |
-          pip install tensorflow==2.3.0
-          cd examples
-          python recurrent.py
-          python multi_inputs.py
-          python heat_map.py
-          python vgg16.py
-          python dump_activations_to_disk.py
-          cd ..
-          pytest tests --disable-pytest-warnings
+      run: |
+        pip install tensorflow==2.3.0
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
+        pytest tests --disable-pytest-warnings
     - name: Run tests with tensorflow 2.4
-        run: |
-          pip install tensorflow==2.4.0
-          cd examples
-          python recurrent.py
-          python multi_inputs.py
-          python heat_map.py
-          python vgg16.py
-          python dump_activations_to_disk.py
-          cd ..
-          pytest tests --disable-pytest-warnings
+      run: |
+        pip install tensorflow==2.4.0
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
+        pytest tests --disable-pytest-warnings
 
 
