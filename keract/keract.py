@@ -297,14 +297,19 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     input_layer_outputs = []
     layer_outputs = OrderedDict()
 
+    def is_placeholder(n):
+        return (hasattr(n, '_op') and n._op.type == 'Placeholder') or '_input' in str(n)
+
     for key, node in nodes.items():
         if isinstance(node, list):
             for nod in node:
-                #if nod.op.type != 'Placeholder':  # no inputs please.
-                layer_outputs.update({key: nod})
+                if not is_placeholder(nod):
+                    if key not in layer_outputs:
+                        layer_outputs[key] = []
+                    layer_outputs[key].append(nod)
         else:
-            #if node.op.type != 'Placeholder':  # no inputs please.
-            layer_outputs.update({key: node})
+            if not is_placeholder(node):
+                layer_outputs.update({key: node})
     if nodes_to_evaluate is None or (layer_names is not None) and \
             any([n.name in layer_names for n in model.inputs]):
         input_layer_outputs = list(model.inputs)

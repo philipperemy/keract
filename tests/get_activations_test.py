@@ -326,6 +326,7 @@ class GetActivationsTest(unittest.TestCase):
 
         # get activations
         act = keract.get_activations(model, x, layer_names='lstm')['lstm']
+        print(act)
         self.assertEqual(len(act), 3)
         self.assertListEqual(list(act[0].shape), [16, 10, 4])
         self.assertListEqual(list(act[1].shape), [16, 4])
