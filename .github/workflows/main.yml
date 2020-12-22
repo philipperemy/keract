@@ -12,24 +12,56 @@ jobs:
         python-version: [3.8.6]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt && pip install .
     - name: Lint with flake8
       run: |
         pip install flake8
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --max-complexity 20 --max-line-length 127 --statistics
-    - name: Test with tox
+        flake8 . --count --max-complexity 20 --max-line-length 127 --statistics    
+    - name: Install deps without tensorflow
       run: |
-        pip install tox
-        # tox --parallel all
-        tox -vv
+        pip install -r requirements.txt
+        pip install -r examples/examples-requirements.txt
+        pip install pytest
+        pip install -e .
+    - name: Run tests with tensorflow 2.2
+      run: |
+        pip install tensorflow==2.2.0
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
+        pytest tests --disable-pytest-warnings
+    - name: Run tests with tensorflow 2.3
+      run: |
+        pip install tensorflow==2.3.0
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
+        pytest tests --disable-pytest-warnings
+    - name: Run tests with tensorflow 2.4
+      run: |
+        pip install tensorflow==2.4.0
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
+        pytest tests --disable-pytest-warnings
+
+
