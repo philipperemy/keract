@@ -129,7 +129,7 @@ class GetActivationsTest(unittest.TestCase):
         # not really activations here, just weight values. It's to show how to use it.
         weights_values = get_activations(model, x, nodes_to_evaluate=[z, w, b])
 
-        print("Weights valuese:", weights_values)
+        print("Weights values:", weights_values)
         zv = weights_values['block/relu/Relu:0']
         wv = weights_values['fc1/kernel:0']
         bv = weights_values['fc1/bias:0']
