@@ -28,14 +28,17 @@ jobs:
       run: |
         pip install -r requirements.txt
         pip install -r examples/examples-requirements.txt
+        pip install pytest
         pip install tensorflow==2.4.0
         pip install -e .
     - name: Test
       run: |
-        cd examples && python recurrent.py
-        cd examples && python multi_inputs.py
-        cd examples && python heat_map.py
-        cd examples && python vgg16.py
-        cd examples && python dump_activations_to_disk.py
+        cd examples
+        python recurrent.py
+        python multi_inputs.py
+        python heat_map.py
+        python vgg16.py
+        python dump_activations_to_disk.py
+        cd ..
         pytest tests --disable-pytest-warnings
 
