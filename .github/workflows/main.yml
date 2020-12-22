@@ -29,6 +29,7 @@ jobs:
         pip install -r requirements.txt
         pip install -r examples/examples-requirements.txt
         pip install tensorflow==2.4.0
+        pip install -e .
     - name: Test
       run: |
         cd examples && python recurrent.py
