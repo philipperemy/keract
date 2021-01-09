@@ -298,7 +298,7 @@ def get_activations(model, x, layer_names=None, nodes_to_evaluate=None,
     layer_outputs = OrderedDict()
 
     def is_placeholder(n):
-        return (hasattr(n, '_op') and n._op.type == 'Placeholder') or '_input' in str(n)
+        return (hasattr(n, '_op') and n._op.type == 'Placeholder') or '_input' in str(n) or 'input_' in str(n)
 
     for key, node in nodes.items():
         if isinstance(node, list):
