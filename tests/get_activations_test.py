@@ -4,10 +4,12 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow import keras
-from tensorflow.keras import Model
-from tensorflow.keras.layers import Add, Dense, Input
+from tensorflow.keras import Model, Input
+from tensorflow.keras.layers import Add
 from tensorflow.keras.layers import ReLU, concatenate
+from tensorflow.keras.layers import TimeDistributed, Dense, Embedding, LSTM
 
+import keract
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
 tf.compat.v1.disable_eager_execution()
@@ -347,3 +349,26 @@ class GetActivationsTest(unittest.TestCase):
         model.add_loss(loss(inputs, d))
         model.compile(optimizer)
         keract.get_activations(model, x)
+
+    def test_time_distributed(self):
+        input_time = Input(shape=(None,), name='input_time')
+        emb = Embedding(10, 4, name='embedding')(input_time)
+        lstm = LSTM(4, name='lstm')(emb)
+        output_time = Dense(1, name='output_time')(lstm)
+
+        model_time = Model(input_time, output_time)
+        print(model_time.summary())
+
+        # define full model
+        input = Input(shape=(None, None), name='input')
+        timesteps = TimeDistributed(model_time, name='timedistributed')(input)
+        output = Dense(1)(timesteps)
+
+        model = Model(input, output)
+
+        # create example
+        x = np.array([[[1, 2, 1]], [[3, 4, 5]]])
+
+        # get activations
+        acts = keract.get_activations(model, x, layer_names=['timedistributed'], nested=True)
+        self.assertTrue('timedistributed' in acts)
