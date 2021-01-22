@@ -9,7 +9,6 @@ from tensorflow.keras.layers import Add
 from tensorflow.keras.layers import ReLU, concatenate
 from tensorflow.keras.layers import TimeDistributed, Dense, Embedding, LSTM
 
-import keract
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
 tf.compat.v1.disable_eager_execution()
