@@ -6,7 +6,7 @@ import tensorflow.keras.backend as K
 from tensorflow import keras
 from tensorflow.keras import Model
 from tensorflow.keras.layers import Add, Dense, Input
-from tensorflow.keras.layers import ReLU, Layer, concatenate
+from tensorflow.keras.layers import ReLU, concatenate
 
 from keract import get_activations, get_gradients_of_activations, get_gradients_of_trainable_weights, keract
 
@@ -67,7 +67,7 @@ class NestedModel(Model):
         return self.relu(self.fc(x))
 
 
-class NestedLayer(Layer):
+class NestedLayer(Model):
     def __init__(self, *args, **kwargs):
         super(NestedLayer, self).__init__(*args, **kwargs)
         self.fc = Dense(10, name='fc1')
@@ -156,9 +156,6 @@ class GetActivationsTest(unittest.TestCase):
         acts = get_activations(model, x, layer_names=['model/fc1', 'model/relu'], nested=True)
         self.assertListEqual(list(acts.keys()), ['model/fc1', 'model/relu'])
 
-        acts = get_activations(model, x, layer_names='i1')
-        self.assertListEqual(list(acts.keys()), ['i1'])
-
         self.assertRaises(KeyError, lambda: get_activations(model, x, layer_names='unknown'))
 
     def test_output_format(self):
@@ -170,6 +167,8 @@ class GetActivationsTest(unittest.TestCase):
         full_nested = get_activations(model, x, output_format='full', nested=True)
         numbered = get_activations(model, x, output_format='numbered')
 
+        assert len(simple) == len(numbered)
+        assert len(simple) == len(full)
         for s, f, n in zip(list(simple.values()), list(full.values()), list(numbered.values())):
             np.testing.assert_almost_equal(s, f)
             np.testing.assert_almost_equal(f, n)
@@ -219,16 +218,17 @@ class GetActivationsTest(unittest.TestCase):
         grad_acts_nested = get_gradients_of_activations(model, x, y, nested=True)
         acts_nested = get_activations(model, x, nested=True)
 
-        # same support.
-        self.assertListEqual(list(acts), list(grad_acts))
-        self.assertListEqual(list(grad_acts['i1'].shape), list(acts['i1'].shape))
+        # same support without the input.
+        support_without_input = list(acts)
+        support_without_input.remove('i1')
+        self.assertListEqual(support_without_input, list(grad_acts))
         self.assertListEqual(list(grad_acts['model'].shape), list(acts['model'].shape))
         self.assertListEqual(list(grad_acts['block'].shape), list(acts['block'].shape))
         self.assertListEqual(list(grad_acts['fc1'].shape), list(acts['fc1'].shape))
 
-        self.assertListEqual(list(acts_nested), list(grad_acts_nested))
-        self.assertListEqual(list(grad_acts_nested['i1'].shape), list(acts_nested['i1'].shape))
-        self.assertListEqual(list(grad_acts_nested['model/fc1'].shape), list(acts_nested['model/fc1'].shape))
+        support_without_input = list(acts_nested)
+        support_without_input.remove('i1')
+        self.assertListEqual(support_without_input, list(grad_acts_nested))
         self.assertListEqual(list(grad_acts_nested['model/fc1'].shape), list(acts_nested['model/fc1'].shape))
         self.assertListEqual(list(grad_acts_nested['block/fc1'].shape), list(acts_nested['block/fc1'].shape))
         self.assertListEqual(list(grad_acts_nested['block/relu'].shape), list(acts_nested['block/relu'].shape))
