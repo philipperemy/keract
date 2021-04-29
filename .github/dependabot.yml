@@ -1,0 +1,15 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "20:00"
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: numpy
+    versions:
+    - "> 1.16.2, < 2"
+  - dependency-name: scikit-learn
+    versions:
+    - 0.24.2
