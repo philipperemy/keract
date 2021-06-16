@@ -197,14 +197,14 @@ def _get_nodes(module, nodes, output_format, nested=False, layer_names=None, dep
                 name = n_(n, output_format, nested, mod)
                 if layer_names is None or name in layer_names:
                     if is_node_a_model:
-                        output = n._layers[-1].output
+                        output = n.layers[-1].output
                     else:
                         output = n.output
                     nodes.update({name: output})
             except AttributeError:
                 pass
 
-    for layer in module._layers:
+    for layer in module.layers:
         update_node(layer)
         if nested:
             _get_nodes(layer, nodes, output_format, nested, layer_names, depth + 1)
