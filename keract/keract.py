@@ -197,7 +197,7 @@ def _get_nodes(module, nodes, output_format, nested=False, layer_names=None, dep
                 name = n_(n, output_format, nested, mod)
                 if layer_names is None or name in layer_names:
                     if is_node_a_model:
-                        if hasattr(n,'_layers'):
+                        if hasattr(n, '_layers'):
                             output = n._layers[-1].output
                         else:
                             output = n.layers[-1].output
@@ -207,7 +207,7 @@ def _get_nodes(module, nodes, output_format, nested=False, layer_names=None, dep
             except AttributeError:
                 pass
 
-    if hasattr(module,'_layers'):
+    if hasattr(module, '_layers'):
         for layer in module._layers:
             update_node(layer)
             if nested:
