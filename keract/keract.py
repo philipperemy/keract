@@ -197,17 +197,26 @@ def _get_nodes(module, nodes, output_format, nested=False, layer_names=None, dep
                 name = n_(n, output_format, nested, mod)
                 if layer_names is None or name in layer_names:
                     if is_node_a_model:
-                        output = n.layers[-1].output
+                        if hasattr(n,'_layers'):
+                            output = n._layers[-1].output
+                        else:
+                            output = n.layers[-1].output
                     else:
                         output = n.output
                     nodes.update({name: output})
             except AttributeError:
                 pass
 
-    for layer in module.layers:
-        update_node(layer)
-        if nested:
-            _get_nodes(layer, nodes, output_format, nested, layer_names, depth + 1)
+    if hasattr(module,'_layers'):
+        for layer in module._layers:
+            update_node(layer)
+            if nested:
+                _get_nodes(layer, nodes, output_format, nested, layer_names, depth + 1)
+    else:
+        for layer in module.layers:
+            update_node(layer)
+            if nested:
+                _get_nodes(layer, nodes, output_format, nested, layer_names, depth + 1)
 
 
 # def _get_nodes(module, output_format, nested=False, layer_names=[]):
