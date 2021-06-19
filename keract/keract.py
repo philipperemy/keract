@@ -8,7 +8,9 @@ from tensorflow.keras import Sequential
 from tensorflow.keras.models import Model
 import tensorflow as tf
 
-tf.compat.v1.experimental.output_all_intermediates(True)
+
+if tf.__version__ == '2.5.0':
+    tf.compat.v1.experimental.output_all_intermediates(True)
 
 
 def is_placeholder(n):
