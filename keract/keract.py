@@ -6,6 +6,9 @@ import numpy as np
 import tensorflow.keras.backend as K
 from tensorflow.keras import Sequential
 from tensorflow.keras.models import Model
+import tensorflow as tf
+
+tf.compat.v1.experimental.output_all_intermediates(True)
 
 
 def is_placeholder(n):
