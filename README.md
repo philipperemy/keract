@@ -3,7 +3,9 @@
 
 [![Downloads](https://pepy.tech/badge/keract)](https://pepy.tech/project/keract)
 [![Downloads](https://pepy.tech/badge/keract/month)](https://pepy.tech/project/keract)
-![Keract CI](https://github.com/philipperemy/keract/workflows/Keract%20CI/badge.svg)
+![Keract CI](https://github.com/philipperemy/keract/workflows/Keract%20CI/badge.svg) 
+
+Tested with Tensorflow 2.3, 2.4 and 2.5.
 ```bash
 pip install keract
 ```
