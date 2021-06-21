@@ -3,9 +3,13 @@ import os
 from collections import OrderedDict
 
 import numpy as np
+import tensorflow as tf
 import tensorflow.keras.backend as K
 from tensorflow.keras import Sequential
 from tensorflow.keras.models import Model
+
+if tf.__version__ == '2.5.0':
+    tf.compat.v1.experimental.output_all_intermediates(True)
 
 
 def is_placeholder(n):
@@ -197,14 +201,21 @@ def _get_nodes(module, nodes, output_format, nested=False, layer_names=None, dep
                 name = n_(n, output_format, nested, mod)
                 if layer_names is None or name in layer_names:
                     if is_node_a_model:
-                        output = n._layers[-1].output
+                        if hasattr(n, '_layers'):
+                            output = n._layers[-1].output
+                        else:
+                            output = n.layers[-1].output
                     else:
                         output = n.output
                     nodes.update({name: output})
             except AttributeError:
                 pass
 
-    for layer in module._layers:
+    try:
+        layers = module._layers if hasattr(module, '_layers') else module.layers
+    except AttributeError:
+        return
+    for layer in layers:
         update_node(layer)
         if nested:
             _get_nodes(layer, nodes, output_format, nested, layer_names, depth + 1)
