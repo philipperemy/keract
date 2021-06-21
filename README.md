@@ -10,7 +10,7 @@ Tested with Tensorflow 2.3, 2.4 and 2.5.
 pip install keract
 ```
 
-*You have just found a way to get the activations (outputs) and gradients for each layer of your Keras model (LSTM, conv nets...).*
+*You have just found a way to get the activations (outputs) and gradients for each layer of your Tensorflow/Keras model (LSTM, conv nets...).*
 
 <p align="center">
   <img src="assets/intro.png">
