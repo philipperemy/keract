@@ -1,7 +1,4 @@
-from io import BytesIO
-
 import numpy as np
-import requests
 from PIL import Image
 from tensorflow.keras.applications.vgg16 import VGG16
 from tensorflow.keras.applications.vgg16 import decode_predictions
