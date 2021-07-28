@@ -13,7 +13,7 @@ if __name__ == "__main__":
     gpu_dynamic_mem_growth()
     model = VGG16()
 
-    image = Image.open('250px-Gatto_europeo4.jpg')
+    image = Image.open('250px-Gatto_europeo4.jpeg')
     image = image.crop((0, 0, 224, 224))
     image = img_to_array(image)
     image = image.reshape((1, image.shape[0], image.shape[1], image.shape[2]))
