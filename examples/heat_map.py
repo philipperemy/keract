@@ -17,10 +17,7 @@ if __name__ == "__main__":
     gpu_dynamic_mem_growth()
     model = VGG16()
 
-    url = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Gatto_' \
-          'europeo4.jpg/250px-Gatto_europeo4.jpg'
-    response = requests.get(url)
-    image = Image.open(BytesIO(response.content))
+    image = Image.open('250px-Gatto_europeo4.jpeg')
     image = image.crop((0, 0, 224, 224))
     image = img_to_array(image)
     arr_image = np.array(image)
