@@ -10,6 +10,8 @@ from data import MNIST
 if __name__ == '__main__':
     # gradients requires no eager execution.
     tf.compat.v1.disable_eager_execution()
+    tf.compat.v1.experimental.output_all_intermediates(True)
+    # tf.executing_eagerly()
     # Check for GPUs and set them to dynamically grow memory as needed
     # Avoids OOM from tensorflow greedily allocating GPU memory
     utils.gpu_dynamic_mem_growth()
