@@ -5,7 +5,7 @@
 [![Downloads](https://pepy.tech/badge/keract/month)](https://pepy.tech/project/keract)
 ![Keract CI](https://github.com/philipperemy/keract/workflows/Keract%20CI/badge.svg) 
 
-Tested with Tensorflow 2.3, 2.4, 2.5 and 2.6.
+Tested with Tensorflow 2.3, 2.4, 2.5, 2.6, 2.7 and 2.8rc0 (Dec 22, 2021).
 
 ```bash
 pip install keract
