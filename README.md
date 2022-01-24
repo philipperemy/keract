@@ -17,6 +17,8 @@ pip install keract
   <img src="assets/intro.png">
 </p>
 
+**Important Note**: The nested models are not well supported. The recent versions of Tensorflow made it extremely tricky to extract the layer outputs reliably. Please refer to the example section to see what is possible.
+
 ## API
 
 - [get_activations](#get-activations-nodeslayers-outputs-as-numpy-arrays)
