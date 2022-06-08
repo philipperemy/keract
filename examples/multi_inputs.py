@@ -41,11 +41,11 @@ def main():
     m1.compile(optimizer='adam', loss='mse')
     utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b]))
     utils.print_names_and_values(keract.get_gradients_of_trainable_weights(m1, [inp_a, inp_b], out_c))
-    utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c))
+    # utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c))
 
     # Just get the last layer!
     utils.print_names_and_values(keract.get_activations(m1, [inp_a, inp_b], layer_names='last_layer'))
-    utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c,
+    # utils.print_names_and_values(keract.get_gradients_of_activations(m1, [inp_a, inp_b], out_c,
                                                                      layer_names='last_layer'))
     print('')
 

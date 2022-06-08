@@ -3,13 +3,14 @@ import os
 from collections import OrderedDict
 
 import numpy as np
+# noinspection PyPackageRequirements
 import tensorflow as tf
+# noinspection PyPackageRequirements
 import tensorflow.keras.backend as K
+# noinspection PyPackageRequirements
 from tensorflow.keras import Sequential
+# noinspection PyPackageRequirements
 from tensorflow.keras.models import Model
-
-if tf.__version__ == '2.5.0':
-    tf.compat.v1.experimental.output_all_intermediates(True)
 
 
 def is_placeholder(n):
@@ -158,6 +159,16 @@ def get_gradients_of_activations(model, x, y, layer_names=None, output_format='s
 
 
 def _get_gradients(model, x, y, nodes):
+    with tf.GradientTape() as tape:
+        predictions = model(x)
+        loss = tf.keras.losses.get(model.loss)(y, predictions)
+        nodes_names = nodes.keys()
+        gradients_values = tape.gradient(loss, nodes.values())
+        gradients_values = [g.numpy() for g in gradients_values]
+        return OrderedDict(zip(nodes_names, gradients_values))
+
+
+def get_gradients(model, x, y, nodes):
     if model.optimizer is None:
         raise Exception('Please compile the model first. The loss function is required to compute the gradients.')
 
@@ -484,7 +495,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         # removes the batch size from the shape
         if len(input_image.shape) == 4:
             input_image = input_image.reshape(input_image.shape[1], input_image.shape[2], input_image.shape[3])
-        # removes channels from the shape of grayscale images
+        # remove channels from the shape of grayscale images
         if len(input_image.shape) == 3 and input_image.shape[2] == 1:
             input_image = input_image.reshape(input_image.shape[0], input_image.shape[1])
 
