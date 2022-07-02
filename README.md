@@ -257,3 +257,9 @@ python heat_map.py
 }
 ```
 
+## Contributors
+
+<a href="https://github.com/philipperemy/keract/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=philipperemy/keract" />
+</a>
+
