@@ -101,11 +101,11 @@ keract.display_activations(activations, cmap=None, save=False, directory='.', da
 Plot the activations for each layer using matplotlib
 
 Inputs are:
-- `activations` dict - a dictionary mapping layers to their activations (the output of get_activations)
-- `cmap` (optional) string - a valid matplotlib colormap to be used
-- `save`(optional) a bool, if True the images of the activations are saved rather than being shown
+- `activations`: dict - a dictionary mapping layers to their activations (the output of get_activations)
+- `cmap`: (optional) string - a valid matplotlib colormap to be used
+- `save`: (optional) bool - if True the images of the activations are saved rather than being shown
 - `directory`: (optional) string - where to store the activations (if save is True)
-- `data_format`: (optional) tring - one of "channels_last" (default) or "channels_first".
+- `data_format`: (optional) string - one of "channels_last" (default) or "channels_first".
 - `reshape_1d_layers`: (optional) bool - tries to reshape large 1d layers to a square/rectangle.
 - `fig_size`: (optional) (float, float) - width, height in inches.
 
@@ -121,11 +121,11 @@ Plot heatmaps of activations for all filters overlayed on the input image for ea
 
 Inputs are:
 - `activations`: a dictionary mapping layers to their activations (the output of get_activations).
-- `input_image`:  numpy array of the image you inputed to the get_activations.
-- `directory`(optional) string - where to store the heatmaps (if save is True).
-- `save`(optional) bool - if True the heatmaps are saved rather than being shown.
+- `input_image`:  numpy array - the image that was passed as x to get_activations.
+- `directory`: (optional) string - where to store the heatmaps (if save is True).
+- `save`: (optional) bool - if True the heatmaps are saved rather than being shown.
 - `fix`: (optional) bool - if True automated checks and fixes for incorrect images will be ran.
-- `merge_filters`: (optional) bool - if True if one heatmap (with all the filters averaged together) is produced for each layer, if False a heatmap is produced for each filter in each layer
+- `merge_filters`: (optional) bool - if True one heatmap (with all the filters averaged together) is produced for each layer, if False a heatmap is produced for each filter in each layer
 
 ### Get gradients of weights
 
@@ -133,7 +133,7 @@ Inputs are:
 keract.get_gradients_of_trainable_weights(model, x, y)
 ```
 
-- `model` is a `keras.models.Model` object.
+- `model`: a `keras.models.Model` object.
 - `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `y`: Labels (numpy array). Keras convention.
 
@@ -145,7 +145,7 @@ The output is a dictionary mapping each trainable weight to the values of its gr
 keract.get_gradients_of_activations(model, x, y, layer_name=None, output_format='simple')
 ```
 
-- `model` is a `keras.models.Model` object.
+- `model`: a `keras.models.Model` object.
 - `x`: Numpy array to feed the model as input. In the case of multi-inputs, `x` should be of type List.
 - `y`: Labels (numpy array). Keras convention.
 - `layer_name`: (optional) Name of a layer for which activations should be returned.
