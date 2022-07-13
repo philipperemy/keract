@@ -114,7 +114,7 @@ The ordering of the dimensions in the inputs. "channels_last" corresponds to inp
 ### Display the activations as a heatmap overlaid on an image
 
 ```python
-keract.display_heatmaps(activations, input_image, save=False)
+keract.display_heatmaps(activations, input_image, directory='.', save=False, fix=True, merge_filters=False)
 ```
 
 Plot heatmaps of activations for all filters overlayed on the input image for each layer
@@ -122,9 +122,10 @@ Plot heatmaps of activations for all filters overlayed on the input image for ea
 Inputs are:
 - `activations`: a dictionary mapping layers to their activations (the output of get_activations).
 - `input_image`:  numpy array of the image you inputed to the get_activations.
-- `save`(optional) bool - if True the images of the activations are saved rather than being shown.
-- `fix`: (optional) bool - if automated checks and fixes for incorrect images should be run.
-- `directory`: string - where to store the activations (if save is True).
+- `directory`(optional) string - where to store the heatmaps (if save is True).
+- `save`(optional) bool - if True the heatmaps are saved rather than being shown.
+- `fix`: (optional) bool - if True automated checks and fixes for incorrect images will be ran.
+- `merge_filters`: (optional) bool - if True if one heatmap (with all the filters averaged together) is produced for each layer, if False a heatmap is produced for each filter in each layer
 
 ### Get gradients of weights
 
