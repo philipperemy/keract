@@ -460,21 +460,32 @@ def display_activations(activations, cmap=None, save=False, directory='.',
         plt.close(fig)
 
 
-def display_heatmaps(activations, input_image, directory='.', save=False, fix=True):
+def display_heatmaps(activations, input_image, directory='.', save=False, fix=True, merge_filters=False):  # noqa: C901
     """
     Plot heatmaps of activations for all filters overlayed on the input image for each layer
     :param activations: dict mapping layers to corresponding activations with the shape
     (1, output height, output width, number of filters)
-    :param input_image: numpy array, input image for the overlay
+    :param input_image: numpy array, input image for the overlay, should contain floats in range 0-1
+    :param directory: string - where to store the activations (if save is True)
     :param save: bool, if the plot should be saved
     :param fix: bool, if automated checks and fixes for incorrect images should be run
-    :param directory: string - where to store the activations (if save is True)
+    :param merge_filters: bool, if one heatmap (with all the filters averaged together) should be produced
+    for each layer instead of a heatmap for each filter
     :return: None
     """
     from PIL import Image
     import matplotlib.pyplot as plt
-    from sklearn.preprocessing import MinMaxScaler
     import math
+
+    def __scale(arr):
+        """
+        Scale a numpy array to have values 0-1
+        :param arr: numpy array, the array to be scaled
+        :return: numpy array
+        """
+        scaled = arr * (1/(np.amax(arr) - np.amin(arr)))
+        scaled = scaled - np.amin(scaled)
+        return scaled
 
     data_format = K.image_data_format()
     if fix:
@@ -487,6 +498,9 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         # removes channels from the shape of grayscale images
         if len(input_image.shape) == 3 and input_image.shape[2] == 1:
             input_image = input_image.reshape(input_image.shape[0], input_image.shape[1])
+        # converts a 0-255 image to be 0-1
+        if np.amin(input_image) >= 0 and 1 < np.amax(input_image) <= 255:
+            input_image /= 255.0
 
     index = 0
     for layer_name, acts in activations.items():
@@ -498,20 +512,56 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
             print('-> Skipped. 2D Activations.')
             continue
         print('')
-        nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
-        ncols = int(math.ceil(acts.shape[-1] / nrows))
+
+        if merge_filters:
+            nrows = 1
+            ncols = 1
+        else:
+            nrows = int(math.sqrt(acts.shape[-1]) - 0.001) + 1  # best square fit for the given number
+            ncols = int(math.ceil(acts.shape[-1] / nrows))
+
         fig, axes = plt.subplots(nrows, ncols, figsize=(12, 12))
         fig.suptitle(layer_name)
 
-        # computes values required to scale the activations (which will form our heat map) to be in range 0-1
-        scaler = MinMaxScaler()
-        # reshapes to be 2D with an automaticly calculated first dimension and second
-        # dimension of 1 in order to keep scikitlearn happy
-        scaler.fit(acts.reshape(-1, 1))
-
-        # loops over each filter/neuron
+        # loops over each subplot
         for i in range(nrows * ncols):
-            if i < acts.shape[-1]:
+            # Hide the x-y axes of the plot as we aren't showing a graph
+            axes.flat[i].axis('off') if hasattr(axes, 'flat') else axes.axis('off')
+
+            if merge_filters:
+                if len(acts.shape) == 3:
+                    img = acts[0, :, :]
+                    # gets the activation of the ith layer
+                    if data_format == 'channels_last':
+                        # normalise the activations of each neuron so they all contribute to the average equally
+                        for j in range(0, acts.shape[-1]):
+                            img[:, j] = __scale(img[:, j])
+                        img = np.sum(img, axis=1)
+                    elif data_format == 'channels_first':
+                        for j in range(0, acts.shape[-1]):
+                            img[j, :] = __scale(img[j, :])
+                        img = np.sum(img, axis=0)
+                    else:
+                        raise Exception('Unknown data_format.')
+                elif len(acts.shape) == 4:
+                    img = acts[0, :, :, :]
+                    if data_format == 'channels_last':
+                        for j in range(0, acts.shape[-1]):
+                            img[:, :, j] = __scale(img[:, :, j])
+                        img = np.sum(img, axis=2)
+                    elif data_format == 'channels_first':
+                        for j in range(0, acts.shape[-1]):
+                            img[j, :, :] = __scale(img[j, :, :])
+                        img = np.sum(img, axis=0)
+                    else:
+                        raise Exception('Unknown data_format.')
+                else:
+                    raise Exception('Expect a tensor of 3 or 4 dimensions.')
+            else:
+                # if have reached a subplot that doesn't have an activation associated with it
+                if i >= acts.shape[-1]:
+                    # if this was a break, the x-y axes wouldn't be hidden for the subsequent blank subplots
+                    continue
                 if len(acts.shape) == 3:
                     # gets the activation of the ith layer
                     if data_format == 'channels_last':
@@ -530,28 +580,18 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
                 else:
                     raise Exception('Expect a tensor of 3 or 4 dimensions.')
 
-                # scales the activation (which will form our heat map) to be in range 0-1 using
-                # the previously calculated statistics
-                if len(img.shape) == 1:
-                    img = scaler.transform(img.reshape(-1, 1))
-                else:
-                    img = scaler.transform(img)
-                # print(img.shape)
-                img = Image.fromarray(img)
-                # resizes the activation to be same dimensions of input_image
-                img = img.resize((input_image.shape[1], input_image.shape[0]), Image.LANCZOS)
-                img = np.array(img)
-                if hasattr(axes, 'flat'):
-                    axes.flat[i].imshow(input_image / 255.0)
-                    # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
-                    # Lowest activations are dark, highest are dark red, mid are yellow
-                    axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
-                else:
-                    axes.imshow(input_image / 255.0)
-                    axes.imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
-            # axis off.
-            axes.flat[i].axis('off') if hasattr(axes, 'flat') else axes.axis('off')
-
+            img = Image.fromarray(img)
+            # resizes the overlay to be same dimensions of input_image
+            img = img.resize((input_image.shape[1], input_image.shape[0]), Image.BILINEAR)
+            img = np.array(img)
+            if hasattr(axes, 'flat'):
+                axes.flat[i].imshow(input_image)
+                # overlay the activation at 70% transparency  onto the image with a heatmap colour scheme
+                # Lowest activations are dark blue, highest are dark red, mid are green-yellow
+                axes.flat[i].imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
+            else:
+                axes.imshow(input_image)
+                axes.imshow(img, alpha=0.3, cmap='jet', interpolation='bilinear')
         if save:
             if not os.path.exists(directory):
                 os.makedirs(directory)
