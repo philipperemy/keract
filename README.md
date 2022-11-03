@@ -245,6 +245,10 @@ python heat_map.py
   <img src="assets/heatmap.png">
 </p>
 
+## Limitations / Ways of improvement
+
+In some specific cases, Keract does not handle well some models that contain submodels. Feel free to fork this repo and propose a PR to fix it!
+
 ## Citation
 
 ```
