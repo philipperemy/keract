@@ -55,7 +55,7 @@ def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
         is_compiled = model._is_compiled
     else:
         is_compiled = model.compiled
-    if not model._is_compiled:
+    if not is_compiled:
         # tensorflow.python.keras.applications.*
         applications_model_names = [
             'densenet',
