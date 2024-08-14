@@ -51,6 +51,10 @@ def n_(node, output_format, nested=False, module=None):
 
 
 def _evaluate(model: Model, nodes_to_evaluate, x, y=None, auto_compile=False):
+    if hasattr(model, '_is_compiled'):
+        is_compiled = model._is_compiled
+    else:
+        is_compiled = model.compiled
     if not model._is_compiled:
         # tensorflow.python.keras.applications.*
         applications_model_names = [
@@ -483,7 +487,7 @@ def display_heatmaps(activations, input_image, directory='.', save=False, fix=Tr
         :param arr: numpy array, the array to be scaled
         :return: numpy array
         """
-        scaled = arr * (1/(np.amax(arr) - np.amin(arr)))
+        scaled = arr * (1 / (np.amax(arr) - np.amin(arr)))
         scaled = scaled - np.amin(scaled)
         return scaled
 
