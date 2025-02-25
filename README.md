@@ -7,6 +7,8 @@
 
 Tested with Tensorflow 2.9, 2.10, 2.11, 2.12, 2.13, 2.14 and 2.15 (Nov 17, 2023).
 
+Not compatible with Tensorflow 2.16+.
+
 ```bash
 pip install keract
 ```
