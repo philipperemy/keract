@@ -1,4 +1,4 @@
-import importlib
+import importlib.util
 
 tf_spec = importlib.util.find_spec("tensorflow")
 if tf_spec is None:
